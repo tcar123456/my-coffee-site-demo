@@ -1,103 +1,15 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/Button";
+import type { RoastLevel } from "../../../generated/prisma/enums";
 
-type Product = {
-  no: string;
-  roast: string;
-  origin: string;
-  name: string;
-  notes: string;
-  price: number;
-  weight: string;
-  badge?: string;
-  coverVariant?: 1 | 2 | 3 | 4 | 5;
-  soldOut?: boolean;
+const roastLabel: Record<RoastLevel, string> = {
+  LIGHT: "淺焙",
+  MEDIUM_LIGHT: "中淺",
+  MEDIUM: "中焙",
+  MEDIUM_DARK: "中深",
+  DARK: "深焙",
 };
-
-const products: Product[] = [
-  {
-    no: "01",
-    roast: "淺焙",
-    origin: "ETHIOPIA · 衣索比亞",
-    name: "耶加雪菲 G1 科契爾 水洗",
-    notes: "「蕁麻草、佛手柑、白桃 — 喉韻如紅茶。」",
-    price: 580,
-    weight: "200g",
-    badge: "主理人推薦",
-  },
-  {
-    no: "02",
-    roast: "中焙",
-    origin: "COLOMBIA · 哥倫比亞",
-    name: "拉斯佛羅雷斯 厭氧 72hr",
-    notes: "「蘭姆酒、葡萄乾、黑可可。」",
-    price: 720,
-    weight: "200g",
-    coverVariant: 3,
-  },
-  {
-    no: "03",
-    roast: "淺焙",
-    origin: "PANAMA · 巴拿馬",
-    name: "翡翠莊園 藝伎 紅標",
-    notes: "「茉莉、蜂蜜、白色花卉。」",
-    price: 1680,
-    weight: "100g",
-    badge: "數量稀少",
-    coverVariant: 1,
-  },
-  {
-    no: "04",
-    roast: "中淺",
-    origin: "KENYA · 肯亞",
-    name: "涅里 卡里魯 AA 水洗",
-    notes: "「黑醋栗、番茄汁、葡萄柚 — 酸度明亮。」",
-    price: 620,
-    weight: "200g",
-    coverVariant: 2,
-  },
-  {
-    no: "05",
-    roast: "中深",
-    origin: "GUATEMALA · 瓜地馬拉",
-    name: "安提瓜 聖塔卡塔琳娜",
-    notes: "「巧克力、烤杏仁、橘皮 — 經典中深。」",
-    price: 540,
-    weight: "200g",
-  },
-  {
-    no: "06",
-    roast: "中深",
-    origin: "YEMEN · 葉門",
-    name: "摩卡 哈拉茲 日曬",
-    notes: "「紅酒、黑巧克力、煙燻木質。」",
-    price: 980,
-    weight: "200g",
-    badge: "職人選",
-    coverVariant: 4,
-  },
-  {
-    no: "07",
-    roast: "深焙",
-    origin: "INDONESIA · 印尼",
-    name: "蘇拉維西 托拉雅",
-    notes: "「雪松、黑糖、菸草 — 厚實圓潤。」",
-    price: 480,
-    weight: "200g",
-    coverVariant: 5,
-  },
-  {
-    no: "08",
-    roast: "中焙",
-    origin: "COSTA RICA · 哥斯大黎加",
-    name: "塔拉珠 拉米妮塔",
-    notes: "「焦糖、太妃糖、青蘋果尾韻。」",
-    price: 560,
-    weight: "200g · 補貨中",
-    coverVariant: 3,
-    soldOut: true,
-  },
-];
 
 const filterGroups = [
   {
@@ -145,7 +57,12 @@ const filterGroups = [
   },
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await prisma.product.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: "asc" },
+  });
+
   return (
     <>
       {/* ========== Page header ========== */}
@@ -163,12 +80,12 @@ export default function ProductsPage() {
               當季 · 全部單品
             </h1>
             <p className="mt-3.5 max-w-[52ch] text-[15px] leading-[1.55] text-fg-2">
-              8 支來自 9 個國家小型莊園的精選單品。本批烘焙日 2026.05.06，建議養豆 7–10 天後沖煮。
+              {products.length} 支來自小型莊園的精選單品。建議養豆 7–10 天後沖煮。
             </p>
           </div>
           <div className="flex items-center gap-3">
             <span className="font-mono text-[11px] tracking-[0.14em] text-muted">
-              顯示 8 / 8
+              顯示 {products.length} / {products.length}
             </span>
             <select
               defaultValue="recommended"
@@ -249,76 +166,79 @@ export default function ProductsPage() {
         {/* Grid */}
         <div>
           <div className="grid grid-cols-3 gap-6 max-[1100px]:grid-cols-2 max-[580px]:grid-cols-1">
-            {products.map((p) => (
-              <article
-                key={p.no}
-                className={`group flex flex-col border border-border bg-surface transition-all duration-300 ${
-                  p.soldOut
-                    ? ""
-                    : "hover:-translate-y-[3px] hover:border-border-hi"
-                }`}
-              >
-                <div
-                  className={`bean-cover ${
-                    p.coverVariant ? `bean-cover--alt-${p.coverVariant}` : ""
-                  } relative aspect-[4/5] overflow-hidden`}
+            {products.map((p, i) => {
+              const soldOut = p.stock === 0;
+              const no = String(i + 1).padStart(2, "0");
+              return (
+                <Link
+                  key={p.id}
+                  href={`/products/${p.slug}`}
+                  className={`group flex flex-col border border-border bg-surface transition-all duration-300 ${
+                    soldOut ? "" : "hover:-translate-y-[3px] hover:border-border-hi"
+                  }`}
                 >
-                  <span className="absolute top-4 left-4 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
-                    N° {p.no}
-                  </span>
-                  <span className="absolute top-4 right-4 z-10 font-mono text-[10px] tracking-[0.16em] uppercase text-accent">
-                    {p.roast}
-                  </span>
-                  {p.badge && (
-                    <span className="absolute bottom-4 left-4 z-[2] border border-accent-tint bg-bg px-2 py-1 font-mono text-[9px] tracking-[0.18em] uppercase text-accent">
-                      {p.badge}
+                  <div
+                    className={`bean-cover ${
+                      p.coverVariant ? `bean-cover--alt-${p.coverVariant}` : ""
+                    } relative aspect-[4/5] overflow-hidden`}
+                  >
+                    <span className="absolute top-4 left-4 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
+                      N° {no}
                     </span>
-                  )}
-                  {p.soldOut && (
-                    <div className="absolute inset-0 z-[3] flex items-center justify-center bg-[oklch(15%_0.005_250_/_0.7)] backdrop-blur-[2px] font-mono text-[12px] tracking-[0.32em] uppercase text-accent">
-                      已售完
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                  <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
-                    {p.origin}
-                  </span>
-                  <h3 className="font-serif text-[20px] leading-[1.2] text-fg">
-                    {p.name}
-                  </h3>
-                  <p className="font-serif text-[13px] italic leading-[1.5] text-fg-2">
-                    {p.notes}
-                  </p>
-                  <div className="mt-auto flex items-end justify-between border-t border-border pt-4">
-                    <div>
-                      <div
-                        className={`font-serif text-[22px] tabular-nums ${p.soldOut ? "text-muted" : ""}`}
-                      >
-                        <span className="mr-1 font-mono text-[11px] tracking-[0.08em] text-muted">
-                          NT$
-                        </span>
-                        {p.price.toLocaleString("zh-TW")}
-                      </div>
-                      <div className="font-mono text-[10px] tracking-[0.14em] text-muted">
-                        {p.weight}
-                      </div>
-                    </div>
-                    <span
-                      className={`font-mono text-[10px] tracking-[0.18em] uppercase ${p.soldOut ? "text-muted" : "text-accent"}`}
-                    >
-                      {p.soldOut ? "通知我 →" : "加入 →"}
+                    <span className="absolute top-4 right-4 z-10 font-mono text-[10px] tracking-[0.16em] uppercase text-accent">
+                      {roastLabel[p.roastLevel]}
                     </span>
+                    {p.badge && (
+                      <span className="absolute bottom-4 left-4 z-[2] border border-accent-tint bg-bg px-2 py-1 font-mono text-[9px] tracking-[0.18em] uppercase text-accent">
+                        {p.badge}
+                      </span>
+                    )}
+                    {soldOut && (
+                      <div className="absolute inset-0 z-[3] flex items-center justify-center bg-[oklch(15%_0.005_250_/_0.7)] backdrop-blur-[2px] font-mono text-[12px] tracking-[0.32em] uppercase text-accent">
+                        已售完
+                      </div>
+                    )}
                   </div>
-                </div>
-              </article>
-            ))}
+
+                  <div className="flex flex-1 flex-col gap-3 p-5">
+                    <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
+                      {p.origin}
+                    </span>
+                    <h3 className="font-serif text-[20px] leading-[1.2] text-fg">
+                      {p.name}
+                    </h3>
+                    <p className="font-serif text-[13px] italic leading-[1.5] text-fg-2">
+                      {p.flavorNotes}
+                    </p>
+                    <div className="mt-auto flex items-end justify-between border-t border-border pt-4">
+                      <div>
+                        <div
+                          className={`font-serif text-[22px] tabular-nums ${soldOut ? "text-muted" : ""}`}
+                        >
+                          <span className="mr-1 font-mono text-[11px] tracking-[0.08em] text-muted">
+                            NT$
+                          </span>
+                          {p.price.toLocaleString("zh-TW")}
+                        </div>
+                        <div className="font-mono text-[10px] tracking-[0.14em] text-muted">
+                          {p.weightGram}g
+                        </div>
+                      </div>
+                      <span
+                        className={`font-mono text-[10px] tracking-[0.18em] uppercase ${soldOut ? "text-muted" : "text-accent"}`}
+                      >
+                        {soldOut ? "通知我 →" : "查看 →"}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
 
           {/* Pager */}
           <div className="mt-14 flex items-center justify-between border-t border-border pt-8 font-mono text-[12px] tracking-[0.1em] text-muted">
-            <span>第 1 頁 / 共 1 頁 — 8 個結果</span>
+            <span>第 1 頁 / 共 1 頁 — {products.length} 個結果</span>
             <div className="flex gap-2">
               <a
                 href="#"

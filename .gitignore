@@ -54,3 +54,6 @@ next-env.d.ts
 
 # design reference (HTML mockups, not part of the app)
 /_design-reference/
+
+# Prisma generated client
+/generated/
