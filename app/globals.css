@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* =============================================================
+   MUBEI / 暮焙 — Design Tokens
+   Editorial × Dark Charcoal
+   Source: _design-reference/styles.css
+   ============================================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surface scale — dark charcoal */
+  --bg:          oklch(15% 0.005 250);
+  --surface:     oklch(19% 0.005 250);
+  --surface-2:   oklch(23% 0.005 250);
+  --surface-3:   oklch(27% 0.005 250);
+
+  /* Text scale */
+  --fg:          oklch(95% 0.012 80);
+  --fg-2:        oklch(80% 0.014 70);
+  --muted:       oklch(60% 0.015 60);
+  --dim:         oklch(42% 0.012 60);
+
+  /* Borders */
+  --border:      oklch(28% 0.008 250);
+  --border-hi:   oklch(38% 0.012 250);
+
+  /* Accent — warm amber, single-origin coffee */
+  --accent:      oklch(74% 0.14 55);
+  --accent-hi:   oklch(82% 0.15 55);
+  --accent-tint: oklch(28% 0.06 55);
+
+  /* Status */
+  --success:     oklch(72% 0.13 145);
+  --warn:        oklch(78% 0.14 75);
+  --danger:      oklch(66% 0.17 25);
+
+  /* Layout */
+  --max:         1280px;
+  --gutter:      clamp(20px, 4vw, 48px);
 }
 
+/* Map design tokens into Tailwind v4 utilities so we can use
+   `bg-surface`, `text-accent`, `border-border-hi`, `font-serif`, etc. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+  --color-border: var(--border);
+  --color-border-hi: var(--border-hi);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-accent-tint: var(--accent-tint);
+  --color-success: var(--success);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
+
+  --font-serif: 'Noto Serif TC', 'Iowan Old Style', 'Charter', 'Source Serif Pro', Georgia, 'Songti TC', 'PingFang TC', serif;
+  --font-sans: 'Noto Sans TC', -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'PingFang TC', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+
+  /* Custom keyframes mapped to Tailwind animation utility */
+  --animate-pulse-dot: pulse-dot 2.4s ease-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(1.4); }
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--fg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+::selection { background: var(--accent-tint); color: var(--fg); }
+
+/* =============================================================
+   Component-level visuals that are too custom for Tailwind utilities
+   (radial gradients, faux coffee beans, placeholder cover images)
+   ============================================================= */
+
+/* Hero artwork — single-origin coffee bean still life */
+.hero-art {
+  background:
+    radial-gradient(ellipse at 35% 30%, oklch(40% 0.08 60) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 75%, oklch(28% 0.06 40) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(24% 0.04 50), oklch(16% 0.02 50));
+}
+.hero-art::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90px 130px at 38% 48%, oklch(10% 0.02 40) 0%, oklch(10% 0.02 40) 60%, transparent 62%),
+    radial-gradient(ellipse 75px 110px at 58% 44%, oklch(13% 0.02 40) 0%, oklch(13% 0.02 40) 60%, transparent 62%),
+    radial-gradient(ellipse 80px 120px at 50% 62%, oklch(8% 0.02 40) 0%, oklch(8% 0.02 40) 60%, transparent 62%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Featured bean cover — smaller faux beans */
+.bean-cover {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(38% 0.06 60) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(24% 0.05 40) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(22% 0.04 50), oklch(16% 0.02 50));
+}
+.bean-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 22px 30px at 38% 52%, oklch(12% 0.02 40) 0%, oklch(12% 0.02 40) 60%, transparent 62%),
+    radial-gradient(ellipse 18px 25px at 58% 48%, oklch(14% 0.02 40) 0%, oklch(14% 0.02 40) 60%, transparent 62%),
+    radial-gradient(ellipse 20px 28px at 50% 64%, oklch(10% 0.02 40) 0%, oklch(10% 0.02 40) 60%, transparent 62%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Featured bean cover — alt color variants for products listing */
+.bean-cover--alt-1 {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(45% 0.10 90) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(28% 0.06 60) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(24% 0.04 70), oklch(16% 0.02 70));
+}
+.bean-cover--alt-2 {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(40% 0.08 30) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(24% 0.06 20) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(22% 0.04 30), oklch(14% 0.02 30));
+}
+.bean-cover--alt-3 {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(38% 0.07 130) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(24% 0.05 130) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(22% 0.03 130), oklch(15% 0.015 130));
+}
+.bean-cover--alt-4 {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(40% 0.10 350) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(24% 0.06 0) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(22% 0.04 350), oklch(14% 0.02 350));
+}
+.bean-cover--alt-5 {
+  background:
+    radial-gradient(ellipse at 30% 25%, oklch(40% 0.09 280) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 80%, oklch(24% 0.05 270) 0%, transparent 60%),
+    linear-gradient(160deg, oklch(20% 0.03 270), oklch(13% 0.02 270));
+}
+
+/* Placeholder image block (dispatches, etc.) */
+.img-block {
+  background: linear-gradient(135deg, oklch(28% 0.04 60), oklch(20% 0.03 50));
+  position: relative;
+  overflow: hidden;
+}
+.img-block::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 30%, oklch(40% 0.08 70) 0%, transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  pointer-events: none;
+}
+.img-block::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: oklch(95% 0.01 60 / 0.5);
+  text-transform: uppercase;
 }
