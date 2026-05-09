@@ -3,7 +3,7 @@
 > 最後更新：2026-05-10
 > 本文件為開發里程碑規劃。時程估算為推測，實際進度依個人開發節奏調整。
 
-## 目前狀態（Phase 0–1 ✅ 已完成）
+## 目前狀態（Phase 0–2 ✅ 已完成）
 
 ### Phase 0：骨架
 - [x] Next.js 16 + React 19 + TS5 + Tailwind 4 骨架
@@ -24,21 +24,24 @@
 - [x] 列表卡片包成 Link 連到詳細頁
 - [x] `pnpm build` 通過（9 條路由）
 
-**目前狀態**：商品資料已從 DB 讀取，但購物車 / 篩選 / 表單等互動仍是視覺 mockup（`defaultValue` SSR）。下一階段接 Auth。
-
 ---
 
-## Phase 2：身份驗證與授權（預計 1 週）
+### Phase 2：身份驗證與授權（詳見 PHASE_2.md）
+- [x] Auth.js v5（`next-auth@5.0.0-beta.31`）+ bcryptjs + zod
+- [x] Credentials provider（email + password）+ JWT session
+- [x] Schema migration `add_auth_models`：User 加 password / emailVerified / image，新增 Account / Session / VerificationToken
+- [x] Split config：`lib/auth.config.ts`（edge-safe，含 jwt / session / authorized callbacks）+ `lib/auth.ts`（Credentials + bcrypt）
+- [x] `proxy.ts` 守門：`/account/*` 需登入、`/admin/*` 需 `SELLER` role（Next.js 16 把 `middleware` 改名 `proxy`）
+- [x] 登入頁 / 註冊頁 / SignOut（沿用 editorial design tokens）
+- [x] `/account` 頁顯示真實 session 資料；Masthead 接 session 顯示登入狀態
+- [x] Seed 加 customer + seller demo 帳號（`customer@coffee.local` / `seller@coffee.local`）
+- [x] HTTP-level 走訪驗收：守門、登入登出、role 區分全綠
 
-- [ ] 安裝 Auth.js（NextAuth v5 / `@auth/core`）
-- [ ] 設定 credentials provider（email + password）+ Google OAuth（作品集展示用）
-- [ ] Prisma adapter 接上現有 `User` schema（Phase 1 已預留 `Role` enum）
-- [ ] `middleware.ts` 守門：`/account/*` 需登入、`/admin/*` 需 `SELLER` role
-- [ ] `/account` 頁改顯示真實登入用戶資料
-- [ ] 登入 / 註冊 / 忘記密碼頁面（設計沿用 editorial design tokens）
-- [ ] User schema 可能需要加欄位（emailVerified、image、accounts、sessions），會多一次 migration
+**目前狀態**：登入授權層完整，下一階段做購物流程互動化。
 
-**安全注意**：sandbox 環境也不要把 credentials 寫死在 code 裡，用 `.env.local`。
+**Phase 2 不做（保留紀錄供未來補上，詳見 PHASE_2.md「延後/暫不做」）**：
+- Google OAuth 實際串接（登入 / 註冊頁僅放 disabled placeholder 按鈕）
+- 忘記密碼 / 寄信 / 密碼重設流程
 
 ---
 

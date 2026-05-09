@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { Session } from "next-auth";
+import { signOutAction } from "@/app/actions/auth";
 
 const navItems = [
   { href: "/", label: "首頁" },
@@ -10,8 +12,9 @@ const navItems = [
   { href: "/account", label: "訂閱配送" },
 ];
 
-export function Masthead() {
+export function Masthead({ session }: { session: Session | null }) {
   const pathname = usePathname();
+  const user = session?.user;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklch,var(--bg)_88%,transparent)] backdrop-blur-md backdrop-saturate-150">
@@ -38,8 +41,25 @@ export function Masthead() {
           })}
         </nav>
 
-        <div className="flex items-center gap-[22px] text-[13px] text-fg-2">
-          <Link href="/account" className="hover:text-accent">登入</Link>
+        <div className="flex items-center gap-[18px] text-[13px] text-fg-2">
+          {user ? (
+            <>
+              <Link href="/account" className="hover:text-accent">
+                {user.name ?? user.email?.split("@")[0] ?? "會員中心"}
+              </Link>
+              <span className="text-dim">·</span>
+              <form action={signOutAction}>
+                <button
+                  type="submit"
+                  className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted hover:text-accent"
+                >
+                  登出
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link href="/login" className="hover:text-accent">登入</Link>
+          )}
           <span className="text-dim">·</span>
           <Link href="/cart" className="hover:text-accent">
             購物車

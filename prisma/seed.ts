@@ -1,10 +1,28 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, RoastLevel } from "../generated/prisma/client";
+import bcrypt from "bcryptjs";
+import { PrismaClient, RoastLevel, Role } from "../generated/prisma/client";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
 const prisma = new PrismaClient({ adapter });
+
+// Phase 2 demo accounts — 作品集用，密碼明文寫在 README 是預期行為。
+// 真實營運的 production seed 不應這樣做。
+const demoUsers = [
+  {
+    email: "customer@coffee.local",
+    name: "示範顧客",
+    password: "Coffee123",
+    role: Role.CUSTOMER,
+  },
+  {
+    email: "seller@coffee.local",
+    name: "示範賣家",
+    password: "Seller123",
+    role: Role.SELLER,
+  },
+];
 
 const products = [
   {
@@ -124,6 +142,23 @@ async function main() {
     console.log(`  ✓ ${p.slug}`);
   }
   console.log(`Done. ${products.length} products seeded.`);
+
+  console.log("Seeding demo users...");
+  for (const u of demoUsers) {
+    const hashed = await bcrypt.hash(u.password, 10);
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: { name: u.name, role: u.role, password: hashed },
+      create: {
+        email: u.email,
+        name: u.name,
+        password: hashed,
+        role: u.role,
+      },
+    });
+    console.log(`  ✓ ${u.email} (${u.role})`);
+  }
+  console.log(`Done. ${demoUsers.length} demo users seeded.`);
 }
 
 main()

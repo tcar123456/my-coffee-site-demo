@@ -28,9 +28,9 @@
 | 樣式 | Tailwind CSS **4.3**（@theme in CSS，**不再用 tailwind.config.ts**） |
 | 字體 | Noto Serif TC（serif）+ Noto Sans TC（sans），透過 `<link>` 從 Google Fonts CDN 載入（不用 `next/font/google`，避免 Turbopack 在 Windows 上處理 CJK 字體時記憶體爆掉） |
 | 元件庫 | shadcn/ui（尚未安裝） |
-| 資料庫 | PostgreSQL（Supabase 或 Neon，尚未建立） |
-| ORM | Prisma（尚未安裝） |
-| 驗證 | Auth.js（NextAuth），role 區分一般會員與賣家（尚未安裝） |
+| 資料庫 | PostgreSQL（Supabase，aws-1-ap-southeast-2） |
+| ORM | **Prisma 7.8.0** + `@prisma/adapter-pg`（v7 採用 adapter-based 初始化、`prisma.config.ts` 取代 schema datasource url） |
+| 驗證 | **Auth.js v5（`next-auth@beta`）** + bcryptjs + JWT session；Role enum 區分 CUSTOMER / SELLER |
 | 金流 | 綠界 ECPay + LINE Pay Sandbox（後期處理） |
 | 物流 | 綠界物流 API（後期處理） |
 | 圖表 | Recharts 或 Tremor（後台報表用，尚未安裝） |
@@ -46,32 +46,49 @@
 ```
 app/
   (shop)/                  # 前台 route group（共用 Masthead + PromoBar + Footer）
-    layout.tsx             # 掛載 Masthead / PromoBar / Footer
+    layout.tsx             # async；auth() 取 session 傳給 Masthead
     page.tsx               # 首頁
-    products/page.tsx      # 商品列表（filter rail + 8 商品 grid + sold-out 狀態）
-    cart/page.tsx          # 購物車（step indicator + 明細 + summary + cross-sell）
+    products/page.tsx      # 商品列表（server component，從 Prisma fetch）
+    products/[slug]/page.tsx  # 商品詳細頁（dynamic SSR）
+    cart/page.tsx          # 購物車（mockup）
     brand/page.tsx         # 品牌介紹（editorial 長文 + 6 章節 + author bio）
   (member)/                # 會員區（Masthead + Footer，無 PromoBar）
-    layout.tsx
-    account/page.tsx       # 會員中心（subscription 卡 + orders + addresses + wishlist）
+    layout.tsx             # async；auth() 取 session 傳給 Masthead
+    account/page.tsx       # 會員中心（顯示真實 session.user，其餘卡片仍是 mockup）
   (admin)/                 # 賣家後台（AdminMasthead，無 Footer）
-    layout.tsx             # 註：production access 走 middleware（Auth.js 尚未裝）
-    admin/page.tsx         # KPI + inline SVG charts + orders 表 + stock alerts
-  api/                     # API routes（待建）
+    layout.tsx             # access 走 proxy.ts，這層只渲染
+    admin/page.tsx         # KPI + inline SVG charts + orders 表 + stock alerts（mockup）
+  (auth)/                  # 登入註冊區（自有 minimal header，不含 Masthead/PromoBar/Footer）
+    layout.tsx
+    login/{page,LoginForm,actions}.tsx     # credentials login + Google placeholder
+    register/{page,RegisterForm,actions}.tsx  # credentials register + 自動登入
+  api/auth/[...nextauth]/route.ts  # Auth.js v5 handlers
+  actions/auth.ts          # signOutAction（'use server'）
   layout.tsx               # 全站 root layout，<head> 載入 Google Fonts CDN
   globals.css              # Tailwind v4 @theme 設計 tokens + bean-cover 變體 (alt-1~5)
 components/
-  Masthead.tsx             # 公開 masthead（client component，usePathname 高亮）
-  PromoBar.tsx             # 促銷橫幅
+  Masthead.tsx             # client；接 session prop，登入時顯示用戶名 + 登出按鈕
+  PromoBar.tsx
   Footer.tsx
-  AdminMasthead.tsx        # 賣家後台 masthead（含 role tag、search、operator info）
-  ui/Button.tsx            # variant: primary | default | ghost；href→Link 或 button
-_design-reference/         # 9 個 HTML 設計稿（已加入 .gitignore，僅本地參考）
+  AdminMasthead.tsx
+  ui/Button.tsx
+lib/
+  prisma.ts                # PrismaClient singleton（adapter-pg）
+  auth.config.ts           # edge-safe；jwt/session/authorized callbacks 都在此（給 proxy 用）
+  auth.ts                  # Credentials provider + bcrypt（authorize），匯出 handlers/auth/signIn/signOut
+types/next-auth.d.ts       # 擴充 Session.user 加 id + role
+prisma/
+  schema.prisma            # User / Account / Session / VerificationToken / Product / ProductImage
+  migrations/              # init + add_auth_models
+  seed.ts                  # 8 商品 + 2 demo 帳號（customer / seller）
+generated/prisma/          # Prisma client 產物（gitignored）
+proxy.ts                   # Next.js 16 守門（替代舊 middleware.ts）；matcher /account/* /admin/*
+_design-reference/         # HTML 設計稿（gitignored）
 public/
-next.config.ts             # 已設定 turbopack.root 避免 workspace 偵測警告
+next.config.ts
 ```
 
-**待建（未來新增）**：`lib/{ecpay,linepay,shipping}/`、`prisma/`、middleware.ts。
+**待建（未來新增）**：`lib/{ecpay,linepay,shipping}/`、`Cart`/`Order`/`Address` schema（Phase 3 起）。
 
 ## 設計稿 → React 轉換流程
 
@@ -113,9 +130,11 @@ pnpm lint     # ESLint
 
 ## 開發狀態
 
-✅ 專案骨架已建立（Next.js 16 + Tailwind 4 + 路由分區 + design tokens 整合）
-✅ 6 條路由全數從 `_design-reference/` 轉成 React（/、/products、/cart、/brand、/account、/admin）
-✅ 三個 route group 各有自己的 layout（shop / member / admin），共用元件抽到 `components/`
-✅ 字體載入改用 Google Fonts CDN（規避 Turbopack on Windows 處理 CJK 字體會死機的問題）
-🚧 篩選 / 排序 / 數量 / 表單等互動還是視覺 mockup（用 `defaultValue` SSR 渲染，待接 state）
-🚧 shadcn/ui、Prisma、Auth.js、middleware（admin role 守門）、ECPay / LINE Pay / 物流 API 尚未安裝
+✅ 專案骨架（Next.js 16 + Tailwind 4 + 路由分區 + design tokens）
+✅ 6 條前台路由從 `_design-reference/` 轉成 React，加上 `/products/[slug]` / `/login` / `/register`
+✅ Prisma 7 + Supabase PostgreSQL：`Product` / `ProductImage` 接好，`/products` 與 `/products/[slug]` 從 DB 讀
+✅ Auth.js v5：credentials login + JWT session + `proxy.ts` role-gate（`/account/*` 需登入、`/admin/*` 需 SELLER）
+✅ Demo 帳號：`customer@coffee.local` / `Coffee123`（CUSTOMER）、`seller@coffee.local` / `Seller123`（SELLER）
+🚧 購物車 / 篩選 / 訂單 / 地址 / 收藏豆款仍是視覺 mockup，等 Phase 3+ 接互動與 schema
+🚧 shadcn/ui、Cart / Order / Address schema、ECPay / LINE Pay / 物流 API 尚未安裝
+🚧 Google OAuth 與忘記密碼留著 placeholder 未實作（PHASE_2.md「延後/暫不做」有紀錄）

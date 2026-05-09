@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { auth } from "@/lib/auth";
 
 type SideNavItem = {
   label: string;
@@ -147,7 +149,15 @@ const wishlist: Wish[] = [
   },
 ];
 
-export default function AccountPage() {
+export default async function AccountPage() {
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+
+  const { name, email, id, role } = session.user;
+  const displayName = name?.trim() || email?.split("@")[0] || "會員";
+  const initials = displayName.slice(0, 2).toUpperCase();
+  const memberId = `MB-${id.slice(-6).toUpperCase()}`;
+
   return (
     <>
       {/* ========== Account header ========== */}
@@ -160,14 +170,19 @@ export default function AccountPage() {
                 "linear-gradient(135deg, oklch(35% 0.06 60), oklch(22% 0.03 50))",
             }}
           >
-            YC
+            {initials}
           </div>
           <div>
             <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
-              早安，余先生
+              早安，{displayName}
             </h1>
             <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
-              會員 ID · MB-009842 / 加入於 2024.03.18
+              會員 ID · {memberId} / {email}
+              {role === "SELLER" && (
+                <span className="ml-2 border border-accent-tint px-1.5 py-0.5 text-accent">
+                  SELLER
+                </span>
+              )}
             </div>
           </div>
           <div className="border-l border-border pl-8 text-right max-[720px]:hidden">
