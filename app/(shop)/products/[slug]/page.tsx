@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { getWishlistedProductIds } from "@/lib/wishlist-server";
 import { Button } from "@/components/ui/Button";
 import { AddToCartForm } from "@/components/AddToCartForm";
+import { WishlistHeartButton } from "@/components/WishlistHeartButton";
 import type { RoastLevel } from "../../../../generated/prisma/enums";
 
 const roastLabel: Record<RoastLevel, string> = {
@@ -34,6 +36,8 @@ export default async function ProductDetailPage({
 
   const soldOut = product.stock === 0;
   const isLoggedIn = !!session?.user;
+  const wishlistedIds = await getWishlistedProductIds(session?.user?.id);
+  const inWishlist = wishlistedIds.has(product.id);
 
   return (
     <article className="mx-auto max-w-[var(--max)] px-[var(--gutter)] pt-[clamp(40px,5vw,72px)] pb-[clamp(72px,9vw,128px)]">
@@ -118,7 +122,15 @@ export default async function ProductDetailPage({
                 建議養豆 7–10 天 · 烘焙日期請見包裝
               </div>
             </div>
-            {soldOut && <Button variant="ghost">補貨通知</Button>}
+            <div className="flex items-center gap-2.5">
+              <WishlistHeartButton
+                productId={product.id}
+                isLoggedIn={isLoggedIn}
+                initialInWishlist={inWishlist}
+                loginCallback={`/products/${slug}`}
+              />
+              {soldOut && <Button variant="ghost">補貨通知</Button>}
+            </div>
           </div>
 
           {/* Add to cart form */}

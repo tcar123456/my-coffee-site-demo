@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { getWishlistedProductIds } from "@/lib/wishlist-server";
 import { UserCartView } from "./UserCartView";
 import { GuestCartView } from "./GuestCartView";
 
@@ -51,8 +52,12 @@ export default async function CartPage() {
   const user = session?.user;
 
   let dbItems: Awaited<ReturnType<typeof loadDbItems>> = [];
+  let wishlistedIds: string[] = [];
   if (user) {
-    dbItems = await loadDbItems(user.id);
+    [dbItems, wishlistedIds] = await Promise.all([
+      loadDbItems(user.id),
+      getWishlistedProductIds(user.id).then((s) => Array.from(s)),
+    ]);
   }
 
   return (
@@ -79,7 +84,11 @@ export default async function CartPage() {
       </section>
 
       {/* Cart body */}
-      {user ? <UserCartView items={dbItems} /> : <GuestCartView />}
+      {user ? (
+        <UserCartView items={dbItems} wishlistedProductIds={wishlistedIds} />
+      ) : (
+        <GuestCartView />
+      )}
 
       {/* Cross-sell */}
       <section className="border-y border-border bg-surface">

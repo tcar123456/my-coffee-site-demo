@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/lib/cart-store";
 import { getProductsByIds } from "@/app/actions/cart";
@@ -170,14 +171,12 @@ export function GuestCartView() {
                     >
                       移除
                     </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="收藏功能預計於 Phase 4 提供"
-                      className="cursor-not-allowed font-mono text-[11px] tracking-[0.14em] uppercase text-dim"
+                    <Link
+                      href="/login?callbackUrl=%2Fcart"
+                      className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted transition-colors hover:text-accent"
                     >
                       儲存到收藏 ♡
-                    </button>
+                    </Link>
                   </div>
 
                   {exceedsStock && (

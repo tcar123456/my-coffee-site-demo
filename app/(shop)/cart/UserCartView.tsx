@@ -1,9 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { updateCartItemQty, removeCartItem } from "@/app/actions/cart";
+import { addToWishlist } from "@/app/actions/wishlist";
 import { getGrindLabel, getPkgLabel } from "@/lib/cart-options";
 
 type Item = {
@@ -25,9 +26,33 @@ type Item = {
 
 const SHIPPING_FREE_THRESHOLD = 1200;
 
-export function UserCartView({ items }: { items: Item[] }) {
+export function UserCartView({
+  items,
+  wishlistedProductIds,
+}: {
+  items: Item[];
+  wishlistedProductIds: string[];
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [savedIds, setSavedIds] = useState<Set<string>>(
+    () => new Set(wishlistedProductIds),
+  );
+
+  const handleSaveWishlist = (productId: string) => {
+    setSavedIds((s) => new Set(s).add(productId));
+    startTransition(async () => {
+      const res = await addToWishlist(productId);
+      if (!res.ok) {
+        setSavedIds((s) => {
+          const next = new Set(s);
+          next.delete(productId);
+          return next;
+        });
+      }
+      router.refresh();
+    });
+  };
 
   const subtotal = items.reduce((s, l) => s + l.product.price * l.qty, 0);
   const itemCount = items.reduce((s, l) => s + l.qty, 0);
@@ -124,14 +149,23 @@ export function UserCartView({ items }: { items: Item[] }) {
                     >
                       移除
                     </button>
-                    <button
-                      type="button"
-                      disabled
-                      title="收藏功能預計於 Phase 4 提供"
-                      className="cursor-not-allowed font-mono text-[11px] tracking-[0.14em] uppercase text-dim"
-                    >
-                      儲存到收藏 ♡
-                    </button>
+                    {savedIds.has(line.product.id) ? (
+                      <span
+                        className="font-mono text-[11px] tracking-[0.14em] uppercase text-accent"
+                        aria-live="polite"
+                      >
+                        已收藏 ♥
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleSaveWishlist(line.product.id)}
+                        disabled={isPending}
+                        className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted transition-colors hover:text-accent disabled:opacity-40"
+                      >
+                        儲存到收藏 ♡
+                      </button>
+                    )}
                   </div>
 
                   {exceedsStock && (
@@ -231,7 +265,7 @@ function CartSummary({
         </span>
       </div>
 
-      <Button href="#" variant="primary" block className="mt-7">
+      <Button href="/checkout/address" variant="primary" block className="mt-7">
         前往結帳 →
       </Button>
 

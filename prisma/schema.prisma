@@ -1,6 +1,8 @@
 // Prisma schema — my-coffee-site
 // Phase 1: User / Product / ProductImage
-// Cart / Order / Address / Wishlist 在後續 phase 增加
+// Phase 3a: Cart / CartItem
+// Phase 3b: Address / Order / OrderItem / OrderCounter
+// Phase 4:  WishlistItem / Subscription（會員中心模組）
 
 generator client {
   provider = "prisma-client"
@@ -25,11 +27,13 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  cart      Cart?
-  addresses Address[]
-  orders    Order[]
+  accounts      Account[]
+  sessions      Session[]
+  cart          Cart?
+  addresses     Address[]
+  orders        Order[]
+  wishlistItems WishlistItem[]
+  subscriptions Subscription[]
 }
 
 enum Role {
@@ -93,9 +97,10 @@ model Product {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  images     ProductImage[]
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  images        ProductImage[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
 
   @@index([isActive])
 }
@@ -253,4 +258,60 @@ enum PaymentMethod {
   LINE_PAY
   BANK_TRANSFER
   COD
+}
+
+// Phase 4 — 會員中心
+// WishlistItem：(userId, productId) 三元唯一防重複收藏；onDelete Cascade 在兩端避免幽靈記錄。
+// Subscription：假流程 mockup（不接金流、不真出貨）。pricePerShipment 整數 cents-style 同 Order；
+// shipmentsDelivered/totalShipments 對應 design reference「已配送 NN 期 / 共續訂 NN 期」。
+// nextShipAt 純展示，不會自動推進（cron 留 Phase 6/7）。
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model Subscription {
+  id                 String              @id @default(cuid())
+  userId             String
+  plan               SubscriptionPlan
+  cadence            SubscriptionCadence
+  status             SubscriptionStatus  @default(ACTIVE)
+  nextShipAt         DateTime
+  pricePerShipment   Int
+  shipmentsDelivered Int                 @default(0)
+  totalShipments     Int
+  pausedAt           DateTime?
+  cancelledAt        DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+}
+
+enum SubscriptionPlan {
+  DUAL_BEANS_BIWEEKLY
+  SINGLE_BEAN_MONTHLY
+}
+
+enum SubscriptionCadence {
+  BIWEEKLY
+  MONTHLY
 }

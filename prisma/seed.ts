@@ -1,6 +1,13 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
-import { PrismaClient, RoastLevel, Role } from "../generated/prisma/client";
+import {
+  PrismaClient,
+  RoastLevel,
+  Role,
+  SubscriptionPlan,
+  SubscriptionCadence,
+  SubscriptionStatus,
+} from "../generated/prisma/client";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -159,6 +166,64 @@ async function main() {
     console.log(`  ✓ ${u.email} (${u.role})`);
   }
   console.log(`Done. ${demoUsers.length} demo users seeded.`);
+
+  // Phase 4 — customer demo subscription + wishlist（冪等）
+  console.log("Seeding demo subscription + wishlist for customer...");
+  const customer = await prisma.user.findUnique({
+    where: { email: "customer@coffee.local" },
+    select: { id: true },
+  });
+  if (customer) {
+    const subData = {
+      plan: SubscriptionPlan.DUAL_BEANS_BIWEEKLY,
+      cadence: SubscriptionCadence.BIWEEKLY,
+      status: SubscriptionStatus.ACTIVE,
+      nextShipAt: new Date("2026-05-15T00:00:00Z"),
+      pricePerShipment: 1180,
+      shipmentsDelivered: 9,
+      totalShipments: 12,
+    };
+    const existing = await prisma.subscription.findFirst({
+      where: {
+        userId: customer.id,
+        plan: SubscriptionPlan.DUAL_BEANS_BIWEEKLY,
+        status: SubscriptionStatus.ACTIVE,
+      },
+    });
+    if (existing) {
+      await prisma.subscription.update({
+        where: { id: existing.id },
+        data: subData,
+      });
+      console.log(`  ✓ subscription updated (${existing.id})`);
+    } else {
+      const created = await prisma.subscription.create({
+        data: { userId: customer.id, ...subData },
+      });
+      console.log(`  ✓ subscription created (${created.id})`);
+    }
+
+    const wishlistSlugs = [
+      "panama-hacienda-esmeralda-geisha-red",
+      "yemen-mocha-haraz",
+    ];
+    for (const slug of wishlistSlugs) {
+      const product = await prisma.product.findUnique({
+        where: { slug },
+        select: { id: true },
+      });
+      if (!product) continue;
+      await prisma.wishlistItem.upsert({
+        where: {
+          userId_productId: { userId: customer.id, productId: product.id },
+        },
+        update: {},
+        create: { userId: customer.id, productId: product.id },
+      });
+      console.log(`  ✓ wishlist: ${slug}`);
+    }
+  }
+  console.log("Done.");
 }
 
 main()
