@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useTransition } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "next-auth";
 import { signOutAction } from "@/app/actions/auth";
+import { mergeGuestCart } from "@/app/actions/cart";
+import { useCartStore, selectCartCount } from "@/lib/cart-store";
 
 const navItems = [
   { href: "/", label: "首頁" },
@@ -12,9 +15,44 @@ const navItems = [
   { href: "/account", label: "訂閱配送" },
 ];
 
-export function Masthead({ session }: { session: Session | null }) {
+export function Masthead({
+  session,
+  serverCartCount = 0,
+}: {
+  session: Session | null;
+  serverCartCount?: number;
+}) {
   const pathname = usePathname();
+  const router = useRouter();
   const user = session?.user;
+
+  const guestCount = useCartStore(selectCartCount);
+  const hasHydrated = useCartStore((s) => s.hasHydrated);
+
+  // 登入後第一次渲染：若 localStorage 有訪客 cart，merge 到 DB 後清空 store。
+  // dep 為 user.id：每位用戶 session 存在期間只會觸發一次
+  // （store.clear 後 items.length === 0，下次重新渲染不會再 merge）。
+  const [, startTransition] = useTransition();
+  useEffect(() => {
+    if (!user?.id || !hasHydrated) return;
+    const items = useCartStore.getState().items;
+    if (items.length === 0) return;
+    startTransition(async () => {
+      const res = await mergeGuestCart(items);
+      if (res.ok) {
+        useCartStore.getState().clear();
+        router.refresh();
+      }
+    });
+  }, [user?.id, hasHydrated, router]);
+
+  // hydration 前：顯示 server 提供的數字（登入用戶為實值，訪客為 0）
+  // hydration 後：登入用戶仍用 server count；訪客切換成 store 計算的件數
+  const cartCount = !hasHydrated
+    ? serverCartCount
+    : user
+      ? serverCartCount
+      : guestCount;
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_oklch,var(--bg)_88%,transparent)] backdrop-blur-md backdrop-saturate-150">
@@ -63,9 +101,11 @@ export function Masthead({ session }: { session: Session | null }) {
           <span className="text-dim">·</span>
           <Link href="/cart" className="hover:text-accent">
             購物車
-            <span className="ml-1.5 inline-flex h-[18px] min-w-5 items-center justify-center rounded-[9px] bg-accent px-1.5 font-mono text-[10px] font-semibold text-bg">
-              2
-            </span>
+            {cartCount > 0 && (
+              <span className="ml-1.5 inline-flex h-[18px] min-w-5 items-center justify-center rounded-[9px] bg-accent px-1.5 font-mono text-[10px] font-semibold text-bg">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>

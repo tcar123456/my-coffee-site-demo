@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
+import { AddToCartForm } from "@/components/AddToCartForm";
 import type { RoastLevel } from "../../../../generated/prisma/enums";
 
 const roastLabel: Record<RoastLevel, string> = {
@@ -18,16 +20,20 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug },
-    include: { images: { orderBy: { sortOrder: "asc" } } },
-  });
+  const [product, session] = await Promise.all([
+    prisma.product.findUnique({
+      where: { slug },
+      include: { images: { orderBy: { sortOrder: "asc" } } },
+    }),
+    auth(),
+  ]);
 
   if (!product || !product.isActive) {
     notFound();
   }
 
   const soldOut = product.stock === 0;
+  const isLoggedIn = !!session?.user;
 
   return (
     <article className="mx-auto max-w-[var(--max)] px-[var(--gutter)] pt-[clamp(40px,5vw,72px)] pb-[clamp(72px,9vw,128px)]">
@@ -99,7 +105,7 @@ export default async function ProductDetailPage({
             </dd>
           </dl>
 
-          {/* Price + CTA */}
+          {/* Price */}
           <div className="flex items-end justify-between gap-6 max-[480px]:flex-col max-[480px]:items-start">
             <div>
               <div className={`font-serif text-[clamp(34px,4vw,46px)] tabular-nums leading-none ${soldOut ? "text-muted" : "text-fg"}`}>
@@ -112,12 +118,19 @@ export default async function ProductDetailPage({
                 建議養豆 7–10 天 · 烘焙日期請見包裝
               </div>
             </div>
-            {soldOut ? (
-              <Button variant="ghost">補貨通知</Button>
-            ) : (
-              <Button variant="primary">加入購物車</Button>
-            )}
+            {soldOut && <Button variant="ghost">補貨通知</Button>}
           </div>
+
+          {/* Add to cart form */}
+          {!soldOut && (
+            <div className="border-t border-border pt-7">
+              <AddToCartForm
+                productId={product.id}
+                isLoggedIn={isLoggedIn}
+                maxStock={product.stock}
+              />
+            </div>
+          )}
 
           {/* Description */}
           {product.description ? (
