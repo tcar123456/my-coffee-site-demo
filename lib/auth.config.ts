@@ -24,6 +24,9 @@ export const authConfig = {
       if (pathname.startsWith("/account")) {
         return isLoggedIn;
       }
+      if (pathname.startsWith("/checkout")) {
+        return isLoggedIn;
+      }
       return true;
     },
     async jwt({ token, user }) {

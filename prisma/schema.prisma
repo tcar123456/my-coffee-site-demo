@@ -25,9 +25,11 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
-  cart     Cart?
+  accounts  Account[]
+  sessions  Session[]
+  cart      Cart?
+  addresses Address[]
+  orders    Order[]
 }
 
 enum Role {
@@ -91,8 +93,9 @@ model Product {
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
-  images    ProductImage[]
-  cartItems CartItem[]
+  images     ProductImage[]
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   @@index([isActive])
 }
@@ -144,4 +147,110 @@ model CartItem {
 
   @@unique([cartId, productId, grind, pkg])
   @@index([productId])
+}
+
+// Phase 3b — 訂單 / 收件地址
+// Order 直接 snapshot 商品名稱 / 售價，避免商品改名 / 改價時影響歷史訂單。
+// 金額一律用整數（NTD 沒有小數點），避免浮點誤差。
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  recipient String
+  phone     String
+  zipCode   String
+  city      String
+  district  String
+  street    String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
+
+  @@index([userId])
+}
+
+model Order {
+  id             String         @id @default(cuid())
+  orderNumber    String         @unique
+  userId         String
+  addressId      String
+  shippingMethod ShippingMethod
+  paymentMethod  PaymentMethod
+  status         OrderStatus    @default(PENDING)
+
+  subtotal    Int
+  shippingFee Int
+  total       Int
+
+  recipientName    String
+  recipientPhone   String
+  shippingZipCode  String
+  shippingCity     String
+  shippingDistrict String
+  shippingStreet   String
+
+  paidAt      DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  address Address     @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  items   OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  productId   String
+  productName String
+  productSlug String
+  unitPrice   Int
+  qty         Int
+  grind       String?
+  pkg         String?
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+}
+
+// 訂單編號每日序號計數器；用 dailyKey (YYYYMMDD) 作 PK，
+// transaction 內 upsert + increment 保證原子性，避免 count() race。
+model OrderCounter {
+  dailyKey  String   @id
+  lastSeq   Int
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum ShippingMethod {
+  CVS_711
+  CVS_FAMILY
+  HOME_DELIVERY
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  LINE_PAY
+  BANK_TRANSFER
+  COD
 }
