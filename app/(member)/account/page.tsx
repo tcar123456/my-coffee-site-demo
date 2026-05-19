@@ -131,9 +131,12 @@ export default async function AccountPage() {
             <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
               會員 ID · {memberId} / {email}
               {role === "SELLER" && (
-                <span className="ml-2 border border-accent-tint px-1.5 py-0.5 text-accent">
-                  SELLER
-                </span>
+                <Link
+                  href="/admin"
+                  className="ml-2 inline-flex items-center gap-1 border border-accent-tint px-1.5 py-0.5 text-accent transition-colors hover:border-accent hover:bg-accent-tint"
+                >
+                  SELLER · 賣家後台 →
+                </Link>
               )}
             </div>
           </div>

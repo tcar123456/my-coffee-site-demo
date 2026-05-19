@@ -100,7 +100,17 @@ export default async function ProductsPage({
 
   // 平行：篩選後的商品 + 用於 filter rail 的全部 active 商品（算 count 用）
   const [products, allProducts] = await Promise.all([
-    prisma.product.findMany({ where, orderBy }),
+    prisma.product.findMany({
+      where,
+      orderBy,
+      include: {
+        images: {
+          orderBy: { sortOrder: "asc" },
+          take: 1,
+          select: { url: true, alt: true },
+        },
+      },
+    }),
     prisma.product.findMany({
       where: { isActive: true },
       select: { origin: true, roastLevel: true, processingMethod: true },
@@ -216,10 +226,17 @@ export default async function ProductsPage({
                     }`}
                   >
                     <div
-                      className={`bean-cover ${
-                        p.coverVariant ? `bean-cover--alt-${p.coverVariant}` : ""
-                      } relative aspect-[4/5] overflow-hidden`}
+                      className={`${p.images[0] ? "bg-surface" : `bean-cover ${p.coverVariant ? `bean-cover--alt-${p.coverVariant}` : ""}`} relative aspect-[4/5] overflow-hidden`}
                     >
+                      {p.images[0] && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={p.images[0].url}
+                          alt={p.images[0].alt ?? p.name}
+                          loading="lazy"
+                          className="absolute inset-0 size-full object-cover"
+                        />
+                      )}
                       <span className="absolute top-4 left-4 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
                         N° {no}
                       </span>

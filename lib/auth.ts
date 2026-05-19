@@ -35,4 +35,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    // 蓋掉 auth.config 的 edge 版 jwt：在 node side 額外驗 token.id 對應的 User 還在 DB。
+    // 沒這層的話，DB reset / 帳號被刪後 JWT cookie 仍有效，server actions 寫入會撞 FK violation。
+    // 回 null 會讓 NextAuth 廢掉這張 JWT，後續 auth() 直接回 null。
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id as string;
+        token.role = user.role;
+        return token;
+      }
+      if (token?.id) {
+        try {
+          const exists = await prisma.user.findUnique({
+            where: { id: token.id },
+            select: { id: true, role: true },
+          });
+          if (!exists) return null;
+          token.role = exists.role;
+        } catch {
+          // DB 暫時連不上：保留 token，讓 server actions 各自擋（避免登入狀態被 DB 抖動洗掉）
+        }
+      }
+      return token;
+    },
+  },
 });

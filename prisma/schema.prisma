@@ -315,3 +315,30 @@ enum SubscriptionCadence {
   BIWEEKLY
   MONTHLY
 }
+
+// Phase 5c — 優惠碼
+// 主表 CRUD（賣家後台用）；前台兌換邏輯 + PromoCodeUsage 防同帳號濫用留 Phase 7a。
+// discountValue 語意：PERCENT → 1–100 整數（5 = 95 折 5% off）；FIXED → 直接折抵 NT$。
+// nullable 語意：maxUses null = 無上限；startsAt null = 立即生效；endsAt null = 永不過期。
+model PromoCode {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  description   String?
+  discountType  DiscountType
+  discountValue Int
+  minSubtotal   Int          @default(0)
+  maxUses       Int?
+  usedCount     Int          @default(0)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  isActive      Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([isActive])
+}
+
+enum DiscountType {
+  PERCENT
+  FIXED
+}

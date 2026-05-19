@@ -7,6 +7,7 @@ import {
   SubscriptionPlan,
   SubscriptionCadence,
   SubscriptionStatus,
+  DiscountType,
 } from "../generated/prisma/client";
 
 const adapter = new PrismaPg({
@@ -223,6 +224,50 @@ async function main() {
       console.log(`  ✓ wishlist: ${slug}`);
     }
   }
+
+  console.log("Seeding demo promo codes...");
+  const demoPromos = [
+    {
+      code: "SUMMER15",
+      description: "夏季新客 9 折，限首次下單",
+      discountType: DiscountType.PERCENT,
+      discountValue: 15,
+      minSubtotal: 0,
+      maxUses: 100,
+      startsAt: null,
+      endsAt: null,
+      isActive: true,
+    },
+    {
+      code: "FREESHIP200",
+      description: "滿 NT$ 1,000 折運費 100，月配訂閱限定",
+      discountType: DiscountType.FIXED,
+      discountValue: 100,
+      minSubtotal: 1_000,
+      maxUses: null,
+      startsAt: null,
+      endsAt: null,
+      isActive: true,
+    },
+  ];
+  for (const p of demoPromos) {
+    await prisma.promoCode.upsert({
+      where: { code: p.code },
+      update: {
+        description: p.description,
+        discountType: p.discountType,
+        discountValue: p.discountValue,
+        minSubtotal: p.minSubtotal,
+        maxUses: p.maxUses,
+        startsAt: p.startsAt,
+        endsAt: p.endsAt,
+        isActive: p.isActive,
+      },
+      create: p,
+    });
+    console.log(`  ✓ promo: ${p.code}`);
+  }
+
   console.log("Done.");
 }
 

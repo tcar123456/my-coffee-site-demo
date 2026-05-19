@@ -55,13 +55,19 @@ export default async function ProductDetailPage({
       </nav>
 
       <div className="grid grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] items-start gap-[clamp(40px,5vw,80px)] max-[900px]:grid-cols-1 max-[900px]:gap-10">
-        {/* Cover */}
+        {/* Cover + thumbnails */}
         <div className="sticky top-24 max-[900px]:static">
           <div
-            className={`bean-cover ${
-              product.coverVariant ? `bean-cover--alt-${product.coverVariant}` : ""
-            } relative aspect-[4/5] overflow-hidden border border-border`}
+            className={`${product.images[0] ? "bg-surface" : `bean-cover ${product.coverVariant ? `bean-cover--alt-${product.coverVariant}` : ""}`} relative aspect-[4/5] overflow-hidden border border-border`}
           >
+            {product.images[0] && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={product.images[0].url}
+                alt={product.images[0].alt ?? product.name}
+                className="absolute inset-0 size-full object-cover"
+              />
+            )}
             <span className="absolute top-5 left-5 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
               {product.origin.split(" · ")[0]}
             </span>
@@ -79,6 +85,20 @@ export default async function ProductDetailPage({
               </div>
             )}
           </div>
+          {product.images.length > 1 && (
+            <div className="mt-3 grid grid-cols-4 gap-2">
+              {product.images.slice(0, 8).map((img) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={img.id}
+                  src={img.url}
+                  alt={img.alt ?? product.name}
+                  className="aspect-square border border-border bg-surface object-cover"
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Info */}

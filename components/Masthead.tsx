@@ -82,6 +82,17 @@ export function Masthead({
         <div className="flex items-center gap-[18px] text-[13px] text-fg-2">
           {user ? (
             <>
+              {user.role === "SELLER" && (
+                <>
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center gap-1.5 border border-accent-tint px-2 py-1 font-mono text-[10px] tracking-[0.18em] uppercase text-accent transition-colors hover:border-accent hover:bg-accent-tint"
+                  >
+                    賣家後台 →
+                  </Link>
+                  <span className="text-dim">·</span>
+                </>
+              )}
               <Link href="/account" className="hover:text-accent">
                 {user.name ?? user.email?.split("@")[0] ?? "會員中心"}
               </Link>
