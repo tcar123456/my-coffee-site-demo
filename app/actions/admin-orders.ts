@@ -198,6 +198,44 @@ export async function updateOrderStatus(
 }
 
 /**
+ * Phase 6d — 手動確認收款（限 BANK_TRANSFER / COD）
+ * CREDIT_CARD / LINE_PAY 走 gateway callback，不能手動操作（避免繞過驗章直接 PAID）。
+ * 規則：訂單必須是 PENDING + paymentMethod 為 BANK_TRANSFER / COD，才允許後台手動 PAID。
+ */
+export async function confirmManualPayment(
+  orderNumber: string,
+): Promise<AdminActionResult> {
+  try {
+    await requireSeller();
+  } catch {
+    return { ok: false, error: "權限不足。" };
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { orderNumber },
+    select: { id: true, status: true, paymentMethod: true },
+  });
+  if (!order) return { ok: false, error: "找不到此訂單。" };
+  if (order.status !== "PENDING") {
+    return { ok: false, error: "此訂單已不是待付款狀態。" };
+  }
+  if (order.paymentMethod !== "BANK_TRANSFER" && order.paymentMethod !== "COD") {
+    return { ok: false, error: "此付款方式應由金流 callback 自動更新，不可手動確認。" };
+  }
+
+  await prisma.order.update({
+    where: { id: order.id },
+    data: {
+      status: "PAID",
+      paidAt: new Date(),
+      paymentTradeNo: `MANUAL-${order.paymentMethod}`,
+    },
+  });
+  revalidateOrderViews(orderNumber);
+  return { ok: true };
+}
+
+/**
  * 後台 KPI / 總覽用聚合查詢。
  * 7 日營收：只算 PAID / SHIPPED / DELIVERED（已扣款）的 order.total。
  */

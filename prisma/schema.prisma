@@ -202,6 +202,15 @@ model Order {
   deliveredAt DateTime?
   cancelledAt DateTime?
 
+  // Phase 6 — 付款追蹤欄位（同訂單只保留最近一次嘗試；重試會覆蓋）
+  // paymentRequestedAt：開始 redirect / 呼叫 gateway 的時間
+  // paymentTradeNo：gateway 交易編號（ECPay TradeNo / LINE Pay transactionId）
+  // paymentFailedAt + paymentFailReason：失敗紀錄
+  paymentRequestedAt DateTime?
+  paymentTradeNo     String?
+  paymentFailedAt    DateTime?
+  paymentFailReason  String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

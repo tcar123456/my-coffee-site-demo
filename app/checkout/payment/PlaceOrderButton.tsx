@@ -5,8 +5,8 @@
 // 因為下單需要把當前選擇的 payment 一起送出。
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { placeOrder } from "@/app/actions/checkout";
+import { initiatePayment } from "@/app/actions/payment";
 import {
   PAYMENT_METHOD_LABELS,
   type PaymentMethod,
@@ -29,7 +29,6 @@ export function PlaceOrderButton({
   addressId: string;
   shippingMethod: ShippingMethod;
 }) {
-  const router = useRouter();
   const [method, setMethod] = useState<PaymentMethod>("CREDIT_CARD");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -37,17 +36,25 @@ export function PlaceOrderButton({
   const handleSubmit = () => {
     setError(null);
     startTransition(async () => {
-      const result = await placeOrder({
+      const placed = await placeOrder({
         addressId,
         shippingMethod,
         paymentMethod: method,
       });
-      if (result.ok) {
-        router.push(`/account/orders/${result.orderNumber}`);
-        router.refresh();
-      } else {
-        setError(result.error);
+      if (!placed.ok) {
+        setError(placed.error);
+        return;
       }
+      // 訂單已建（status PENDING）→ 立刻啟動付款流程
+      const initiated = await initiatePayment(placed.orderNumber);
+      // 統一用 window.location.href 做 hard navigate：
+      // 1) 避免 client router push + refresh 在 dev tunnel 下的 race
+      // 2) BANK_TRANSFER / COD 跨 layout chain（/checkout → /account），hard reload 確保新 layout 的 server work 都跑
+      const target =
+        initiated.ok && initiated.kind === "redirect"
+          ? initiated.url
+          : `/account/orders/${placed.orderNumber}`;
+      window.location.href = target;
     });
   };
 

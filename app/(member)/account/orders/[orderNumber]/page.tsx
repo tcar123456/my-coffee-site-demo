@@ -9,7 +9,7 @@ import {
   type PaymentMethod,
 } from "@/lib/shipping";
 import { getGrindLabel, getPkgLabel } from "@/lib/cart-options";
-import { PayMockButton } from "./PayMockButton";
+import { RetryPaymentButton } from "./RetryPaymentButton";
 
 type OrderStatus = "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
@@ -67,7 +67,15 @@ export default async function OrderDetailPage({
   }
 
   const status = order.status as OrderStatus;
-  const isDev = process.env.NODE_ENV !== "production";
+  const paymentMethod = order.paymentMethod as PaymentMethod;
+  const bankInfo =
+    paymentMethod === "BANK_TRANSFER" && status === "PENDING"
+      ? {
+          bank: process.env.BANK_NAME || "示範銀行（005 土地銀行）",
+          account: process.env.BANK_ACCOUNT || "000-123-456789",
+          holder: process.env.BANK_ACCOUNT_HOLDER || "暮焙股份有限公司",
+        }
+      : null;
 
   return (
     <>
@@ -265,12 +273,67 @@ export default async function OrderDetailPage({
             </div>
           </Panel>
 
-          {status === "PENDING" && isDev && (
+          {status === "PENDING" &&
+            (paymentMethod === "CREDIT_CARD" || paymentMethod === "LINE_PAY") && (
+              <div className="border border-accent-tint bg-surface p-6">
+                <div className="mb-3 font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
+                  尚未付款
+                </div>
+                <p className="mb-4 text-[13px] leading-[1.6] text-fg-2">
+                  本訂單需透過{paymentMethod === "CREDIT_CARD" ? " ECPay 信用卡" : " LINE Pay"}完成付款；如未在 30 分鐘內完成，訂單會自動取消。
+                </p>
+                <RetryPaymentButton orderNumber={order.orderNumber} />
+                {order.paymentFailReason && (
+                  <p className="mt-3 font-mono text-[11px] text-danger">
+                    上次付款失敗：{order.paymentFailReason}
+                  </p>
+                )}
+              </div>
+            )}
+
+          {bankInfo && (
             <div className="border border-warn bg-surface p-6">
               <div className="mb-3 font-mono text-[10px] tracking-[0.18em] uppercase text-warn">
-                Dev 模式 · Mock 付款
+                匯款資訊 · 3 日內請完成轉帳
               </div>
-              <PayMockButton orderNumber={order.orderNumber} />
+              <dl className="grid grid-cols-[88px_1fr] gap-y-2.5 text-[14px]">
+                <dt className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
+                  銀行
+                </dt>
+                <dd>{bankInfo.bank}</dd>
+                <dt className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
+                  帳號
+                </dt>
+                <dd className="font-mono tabular-nums">{bankInfo.account}</dd>
+                <dt className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
+                  戶名
+                </dt>
+                <dd>{bankInfo.holder}</dd>
+                <dt className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
+                  金額
+                </dt>
+                <dd className="font-mono tabular-nums text-accent">
+                  NT$ {order.total.toLocaleString("zh-TW")}
+                </dd>
+              </dl>
+              <p className="mt-4 font-mono text-[10px] tracking-[0.08em] leading-[1.7] text-muted">
+                轉帳完成後請保留收據；我們會於確認入帳後將訂單狀態改為「已付款」。
+              </p>
+            </div>
+          )}
+
+          {status === "PENDING" && paymentMethod === "COD" && (
+            <div className="border border-border bg-surface p-6">
+              <div className="mb-2 font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
+                付款方式 · 貨到付款
+              </div>
+              <p className="text-[13px] leading-[1.6] text-fg-2">
+                請於收件時以現金支付給配送員，總計{" "}
+                <span className="font-mono tabular-nums text-accent">
+                  NT$ {order.total.toLocaleString("zh-TW")}
+                </span>
+                。
+              </p>
             </div>
           )}
         </aside>
