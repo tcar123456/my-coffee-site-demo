@@ -15,6 +15,7 @@ import {
 import { getGrindLabel, getPkgLabel } from "@/lib/cart-options";
 import type { OrderStatus, PaymentMethod as PrismaPaymentMethod } from "@/generated/prisma/enums";
 import { StatusActions } from "./StatusActions";
+import { CreateShipmentButton } from "./CreateShipmentButton";
 
 type OrderItemRow = {
   id: string;
@@ -200,6 +201,19 @@ export default async function AdminOrderDetailPage({
                   ] ?? order.shippingMethod
                 }
               />
+              {order.cvsStoreName && (
+                <Row
+                  label="取貨門市"
+                  value={
+                    <span>
+                      <span className="block">{order.cvsStoreName}</span>
+                      <span className="mt-0.5 block font-mono text-[11px] text-muted">
+                        {order.cvsAddress} · #{order.cvsStoreId}
+                      </span>
+                    </span>
+                  }
+                />
+              )}
             </dl>
           </Panel>
 
@@ -283,6 +297,38 @@ export default async function AdminOrderDetailPage({
                   列印出貨單 ↗
                 </Link>
               </div>
+            )}
+          </Panel>
+
+          {/* Phase 8c — 物流單操作（PAID 且未建單顯示 build；已建單顯示 LogisticsId） */}
+          <Panel title="物流單">
+            {order.logisticsId ? (
+              <dl className="grid grid-cols-[100px_1fr] gap-y-3 text-[14px]">
+                <Row
+                  label="物流編號"
+                  value={
+                    <span className="font-mono tabular-nums text-accent">
+                      {order.logisticsId}
+                    </span>
+                  }
+                />
+                {order.logisticsSubType && (
+                  <Row
+                    label="通路"
+                    value={
+                      <span className="font-mono text-[12px] text-fg-2">
+                        {order.logisticsSubType}
+                      </span>
+                    }
+                  />
+                )}
+              </dl>
+            ) : status === "PAID" ? (
+              <CreateShipmentButton orderNumber={order.orderNumber} />
+            ) : (
+              <p className="font-mono text-[11px] tracking-[0.04em] text-muted">
+                訂單付款後可建立物流單。
+              </p>
             )}
           </Panel>
         </aside>

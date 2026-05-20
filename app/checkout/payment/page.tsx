@@ -22,6 +22,9 @@ type SearchParams = Promise<{
   addressId?: string;
   shipping?: string;
   promo?: string;
+  cvsStoreId?: string;
+  cvsStoreName?: string;
+  cvsAddress?: string;
 }>;
 
 export default async function CheckoutPaymentPage({
@@ -29,12 +32,20 @@ export default async function CheckoutPaymentPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const { addressId, shipping, promo } = await searchParams;
+  const { addressId, shipping, promo, cvsStoreId, cvsStoreName, cvsAddress } =
+    await searchParams;
   if (!addressId) redirect("/checkout/address");
   if (!shipping || !isShippingMethod(shipping)) {
     redirect(`/checkout/shipping?addressId=${addressId}`);
   }
   const shippingMethod: ShippingMethod = shipping;
+
+  // Phase 8b：CVS 取貨必須帶店資訊，缺則退回 shipping step 重選
+  const isCvs =
+    shippingMethod === "CVS_711" || shippingMethod === "CVS_FAMILY";
+  if (isCvs && (!cvsStoreId || !cvsStoreName || !cvsAddress)) {
+    redirect(`/checkout/shipping?addressId=${addressId}&shipping=${shippingMethod}`);
+  }
 
   const session = await auth();
   const userId = session!.user!.id;
@@ -106,7 +117,16 @@ export default async function CheckoutPaymentPage({
 
   const total = subtotal + shippingFee - tierDiscount - promoDiscount;
 
-  const backToShippingHref = `/checkout/shipping?addressId=${addressId}&shipping=${shippingMethod}`;
+  const backToShippingParams = new URLSearchParams({
+    addressId,
+    shipping: shippingMethod,
+  });
+  if (isCvs && cvsStoreId && cvsStoreName && cvsAddress) {
+    backToShippingParams.set("cvsStoreId", cvsStoreId);
+    backToShippingParams.set("cvsStoreName", cvsStoreName);
+    backToShippingParams.set("cvsAddress", cvsAddress);
+  }
+  const backToShippingHref = `/checkout/shipping?${backToShippingParams.toString()}`;
 
   return (
     <>
@@ -150,7 +170,7 @@ export default async function CheckoutPaymentPage({
           </div>
 
           {/* Shipping summary */}
-          <div className="grid grid-cols-[1fr_auto] items-center gap-4 border border-border bg-surface p-5">
+          <div className="grid grid-cols-[1fr_auto] items-start gap-4 border border-border bg-surface p-5">
             <div>
               <div className="mb-2 font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
                 配送方式
@@ -158,6 +178,14 @@ export default async function CheckoutPaymentPage({
               <div className="font-serif text-[18px]">
                 {SHIPPING_METHOD_LABELS[shippingMethod]}
               </div>
+              {isCvs && cvsStoreName && (
+                <div className="mt-2 text-[13px] text-fg-2">
+                  <span className="block font-serif">門市 · {cvsStoreName}</span>
+                  <span className="mt-0.5 block font-mono text-[11px] leading-[1.5] text-muted">
+                    {cvsAddress}
+                  </span>
+                </div>
+              )}
               <div className="mt-1 font-mono text-[12px] text-muted">
                 {shippingFee === 0 ? (
                   <span className="text-success">已達免運門檻</span>
@@ -237,6 +265,9 @@ export default async function CheckoutPaymentPage({
               addressId={address.id}
               shippingMethod={shippingMethod}
               promoCode={appliedPromoCode}
+              cvsStoreId={isCvs ? cvsStoreId : undefined}
+              cvsStoreName={isCvs ? cvsStoreName : undefined}
+              cvsAddress={isCvs ? cvsAddress : undefined}
             />
 
             <div className="mt-6">

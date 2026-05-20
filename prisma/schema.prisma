@@ -7,6 +7,7 @@
 // Phase 6:  Order 付款追蹤 4 欄
 // Phase 7:  PromoCodeUsage + Order.promoCodeId/discountAmount/tierDiscountAmount
 //           + User.tier/lifetimeSpent + MemberTier enum
+// Phase 8a: Order 物流追蹤 5 欄（logisticsId / logisticsSubType / cvsStoreId / cvsStoreName / cvsAddress）
 
 generator client {
   provider = "prisma-client"
@@ -234,6 +235,16 @@ model Order {
   paymentTradeNo     String?
   paymentFailedAt    DateTime?
   paymentFailReason  String?
+
+  // Phase 8a — 物流追蹤欄位
+  // logisticsId：綠界 AllPayLogisticsID（建單成功才有）
+  // logisticsSubType：綠界子類別（UNIMARTC2C / FAMIC2C / TCAT 等）
+  // cvsStoreId / Name / Address：8b 選店時寫入，建單時帶給 ECPay
+  logisticsId      String?
+  logisticsSubType String?
+  cvsStoreId       String?
+  cvsStoreName     String?
+  cvsAddress       String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

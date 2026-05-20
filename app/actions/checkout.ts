@@ -22,12 +22,17 @@ import {
 } from "@/lib/shipping";
 import { previewDiscount } from "@/lib/schemas/promo-code";
 import { previewTierDiscount } from "@/lib/tier";
+import { findStoreById } from "@/lib/logistics/store-mock";
 
 const placeOrderSchema = z.object({
   addressId: z.string().min(1),
   shippingMethod: z.string().refine(isShippingMethod, "無效的配送方式"),
   paymentMethod: z.string().refine(isPaymentMethod, "無效的付款方式"),
   promoCode: z.string().trim().toUpperCase().optional(),
+  // Phase 8b — CVS 取貨必填三組（HOME_DELIVERY 不需要）；後續業務規則驗證在 placeOrder 內
+  cvsStoreId: z.string().min(1).optional(),
+  cvsStoreName: z.string().min(1).optional(),
+  cvsAddress: z.string().min(1).optional(),
 });
 
 export type PlaceOrderResult =
@@ -45,13 +50,48 @@ export async function placeOrder(input: {
   shippingMethod: string;
   paymentMethod: string;
   promoCode?: string;
+  cvsStoreId?: string;
+  cvsStoreName?: string;
+  cvsAddress?: string;
 }): Promise<PlaceOrderResult> {
   const userId = await requireUserId();
   const parsed = placeOrderSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: "參數錯誤。" };
   }
-  const { addressId, shippingMethod, paymentMethod, promoCode } = parsed.data;
+  const {
+    addressId,
+    shippingMethod,
+    paymentMethod,
+    promoCode,
+    cvsStoreId,
+    cvsStoreName,
+    cvsAddress,
+  } = parsed.data;
+
+  // Phase 8b — CVS 取貨必填店資訊；HOME_DELIVERY 反之不可帶。
+  // 額外校驗：cvsStoreId 必須是 lib/logistics/store-mock.ts 已知 storeId（防偽造）。
+  const isCvs =
+    shippingMethod === "CVS_711" || shippingMethod === "CVS_FAMILY";
+  if (isCvs) {
+    if (!cvsStoreId || !cvsStoreName || !cvsAddress) {
+      return { ok: false, error: "超商取貨必須選擇門市。" };
+    }
+    const known = findStoreById(cvsStoreId);
+    if (!known) {
+      return { ok: false, error: "找不到此門市，請重新選擇。" };
+    }
+    // 鏈別與配送方式必須對齊（7-11 → UNIMART / 全家 → FAMILY）
+    const expectedChain =
+      shippingMethod === "CVS_711" ? "UNIMART" : "FAMILY";
+    if (known.chain !== expectedChain) {
+      return { ok: false, error: "門市與超商通路不符，請重新選擇。" };
+    }
+  } else {
+    if (cvsStoreId || cvsStoreName || cvsAddress) {
+      return { ok: false, error: "宅配方式不需選擇門市。" };
+    }
+  }
 
   const address = await prisma.address.findUnique({
     where: { id: addressId },
@@ -172,6 +212,10 @@ export async function placeOrder(input: {
           promoCodeId,
           discountAmount,
           tierDiscountAmount,
+          // Phase 8b — CVS 取貨才寫入；HOME_DELIVERY 全 null
+          cvsStoreId: cvsStoreId ?? null,
+          cvsStoreName: cvsStoreName ?? null,
+          cvsAddress: cvsAddress ?? null,
           total,
           recipientName: address.recipient,
           recipientPhone: address.phone,

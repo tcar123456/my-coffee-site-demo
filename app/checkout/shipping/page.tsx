@@ -9,14 +9,21 @@ import { CheckoutHeader } from "@/components/CheckoutHeader";
 import { isShippingMethod, type ShippingMethod } from "@/lib/shipping";
 import { ShippingForm } from "./ShippingForm";
 
-type SearchParams = Promise<{ addressId?: string; shipping?: string }>;
+type SearchParams = Promise<{
+  addressId?: string;
+  shipping?: string;
+  cvsStoreId?: string;
+  cvsStoreName?: string;
+  cvsAddress?: string;
+}>;
 
 export default async function CheckoutShippingPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const { addressId, shipping } = await searchParams;
+  const { addressId, shipping, cvsStoreId, cvsStoreName, cvsAddress } =
+    await searchParams;
   if (!addressId) redirect("/checkout/address");
 
   // gating 在 layout 已驗 session，此處 user.id 必存在
@@ -101,6 +108,15 @@ export default async function CheckoutShippingPage({
           addressId={address.id}
           subtotal={subtotal}
           defaultMethod={defaultMethod}
+          initialStore={
+            cvsStoreId && cvsStoreName && cvsAddress
+              ? {
+                  storeId: cvsStoreId,
+                  storeName: cvsStoreName,
+                  storeAddress: cvsAddress,
+                }
+              : null
+          }
         />
       </section>
     </>

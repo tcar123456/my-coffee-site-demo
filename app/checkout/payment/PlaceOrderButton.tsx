@@ -26,10 +26,16 @@ export function PlaceOrderButton({
   addressId,
   shippingMethod,
   promoCode,
+  cvsStoreId,
+  cvsStoreName,
+  cvsAddress,
 }: {
   addressId: string;
   shippingMethod: ShippingMethod;
   promoCode?: string | null;
+  cvsStoreId?: string;
+  cvsStoreName?: string;
+  cvsAddress?: string;
 }) {
   const [method, setMethod] = useState<PaymentMethod>("CREDIT_CARD");
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +50,9 @@ export function PlaceOrderButton({
         paymentMethod: method,
         // 僅在有實際 code 時帶入，避免送空字串觸發 schema 驗證歧義
         ...(promoCode ? { promoCode } : {}),
+        ...(cvsStoreId && cvsStoreName && cvsAddress
+          ? { cvsStoreId, cvsStoreName, cvsAddress }
+          : {}),
       });
       if (!placed.ok) {
         setError(placed.error);
