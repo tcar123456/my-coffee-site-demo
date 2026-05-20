@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+
+export const metadata: Metadata = {
+  title: "品牌故事 · 火與光",
+  description:
+    "暮焙 MUBEI 編年第三卷〈火與光〉：主理人林子翔的烘豆筆記、產地夥伴、五大承諾。",
+};
 
 type Meta = { label: string; value: string; strong?: string };
 type Chapter = {

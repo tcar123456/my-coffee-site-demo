@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -15,6 +16,42 @@ const roastLabel: Record<RoastLevel, string> = {
   MEDIUM_DARK: "中深",
   DARK: "深焙",
 };
+
+// Phase 9b — 動態 metadata：title/desc 接 product；openGraph 帶第一張產品圖
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({
+    where: { slug },
+    select: {
+      name: true,
+      origin: true,
+      flavorNotes: true,
+      description: true,
+      images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true } },
+    },
+  });
+  if (!product) return { title: "找不到此商品" };
+
+  const desc =
+    product.description?.slice(0, 140) ??
+    `${product.origin} · ${product.flavorNotes}`;
+
+  return {
+    title: `${product.name} · ${product.origin}`,
+    description: desc,
+    openGraph: {
+      title: `${product.name} · ${product.origin}`,
+      description: desc,
+      images: product.images[0]?.url
+        ? [{ url: product.images[0].url }]
+        : undefined,
+    },
+  };
+}
 
 export default async function ProductDetailPage({
   params,

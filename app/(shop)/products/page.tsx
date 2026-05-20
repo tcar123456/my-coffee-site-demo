@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "../../../generated/prisma/client";
 import { RoastLevel } from "../../../generated/prisma/enums";
 import { FilterRail } from "./FilterRail";
 import { SortSelect } from "./SortSelect";
+
+export const metadata: Metadata = {
+  title: "單品咖啡",
+  description:
+    "暮焙 MUBEI 單品咖啡列表：精選單一產地咖啡豆，依烘焙度、處理法、價格篩選。",
+};
 
 const roastLabel: Record<RoastLevel, string> = {
   LIGHT: "淺焙",
