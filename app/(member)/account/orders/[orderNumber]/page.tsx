@@ -99,7 +99,7 @@ export default async function OrderDetailPage({
 
           <div className="grid grid-cols-[1fr_auto] items-end gap-6 max-[640px]:grid-cols-1">
             <div>
-              <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
+              <h1 className="text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
                 #{order.orderNumber}
               </h1>
               <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -157,7 +157,7 @@ export default async function OrderDetailPage({
                   className="grid grid-cols-[1fr_auto] items-start gap-4 border-b border-border py-5 last:border-b-0"
                 >
                   <div>
-                    <h3 className="font-serif text-[18px] leading-[1.3]">
+                    <h3 className="text-[18px] leading-[1.3]">
                       {item.productName}
                     </h3>
                     <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[11px] text-fg-2">
@@ -260,7 +260,7 @@ export default async function OrderDetailPage({
               <div className="mb-1 font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
                 付款方式
               </div>
-              <div className="font-serif text-[16px]">
+              <div className="text-[16px]">
                 {PAYMENT_METHOD_LABELS[
                   order.paymentMethod as PaymentMethod
                 ] ?? order.paymentMethod}
@@ -352,7 +352,7 @@ function Panel({
   return (
     <div className="border border-border bg-surface">
       <div className="border-b border-border px-7 py-[22px]">
-        <h3 className="font-serif text-[22px]">{title}</h3>
+        <h3 className="text-[22px]">{title}</h3>
       </div>
       <div className="p-7">{children}</div>
     </div>

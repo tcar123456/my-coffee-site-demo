@@ -89,7 +89,7 @@ export default async function AdminOverviewPage() {
       {/* Header */}
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
         <div>
-          <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+          <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
             總覽
           </h1>
           <span className="mt-2.5 block font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -159,7 +159,7 @@ export default async function AdminOverviewPage() {
         {/* Revenue trend — Phase 5d 接真資料 */}
         <div className="border border-border bg-surface">
           <div className="flex items-center justify-between border-b border-border px-6 py-[18px]">
-            <h3 className="font-serif text-[18px]">營收趨勢 — 最近 7 日</h3>
+            <h3 className="text-[18px]">營收趨勢 — 最近 7 日</h3>
             <Link
               href="/admin/reports"
               className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted hover:text-accent"
@@ -175,7 +175,7 @@ export default async function AdminOverviewPage() {
         {/* Top products (mockup) */}
         <div className="border border-border bg-surface">
           <div className="flex items-center justify-between border-b border-border px-6 py-[18px]">
-            <h3 className="font-serif text-[18px]">本週熱賣豆款</h3>
+            <h3 className="text-[18px]">本週熱賣豆款</h3>
             <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">
               Mockup · Phase 5d
             </span>
@@ -192,7 +192,7 @@ export default async function AdminOverviewPage() {
                   {p.no}
                 </span>
                 <div>
-                  <div className="font-serif text-[14px]">{p.name}</div>
+                  <div className="text-[14px]">{p.name}</div>
                   <div className="mt-0.5 font-mono text-[10px] tracking-[0.1em] uppercase text-muted">
                     {p.meta}
                   </div>
@@ -214,7 +214,7 @@ export default async function AdminOverviewPage() {
         {/* Recent orders */}
         <div className="border border-border bg-surface">
           <div className="flex items-center justify-between border-b border-border px-6 py-[18px]">
-            <h3 className="font-serif text-[18px]">最新訂單</h3>
+            <h3 className="text-[18px]">最新訂單</h3>
             <Link
               href="/admin/orders"
               className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted hover:text-accent"
@@ -293,7 +293,7 @@ export default async function AdminOverviewPage() {
         {/* Stock alerts */}
         <div className="border border-border bg-surface">
           <div className="flex items-center justify-between border-b border-border px-6 py-[18px]">
-            <h3 className="font-serif text-[18px]">庫存警示</h3>
+            <h3 className="text-[18px]">庫存警示</h3>
             <Link
               href="/admin/stock"
               className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted hover:text-accent"
@@ -327,7 +327,7 @@ export default async function AdminOverviewPage() {
                     <div className="flex items-baseline justify-between gap-3">
                       <Link
                         href="/admin/stock"
-                        className="font-serif text-[15px] hover:text-accent"
+                        className="text-[15px] hover:text-accent"
                       >
                         {s.name}
                       </Link>

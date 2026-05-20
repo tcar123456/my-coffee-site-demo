@@ -96,7 +96,7 @@ export default async function AdminLayout({
       <AdminMasthead />
       <div className="grid min-h-[calc(100vh-60px)] grid-cols-[220px_1fr] max-[900px]:grid-cols-1">
         <AdminSideRail groups={groups} />
-        <main>{children}</main>
+        <main id="main-content">{children}</main>
       </div>
     </>
   );

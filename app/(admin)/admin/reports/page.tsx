@@ -53,7 +53,7 @@ export default async function AdminReportsPage({
         </div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+            <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
               報表
             </h1>
             <span className="mt-2.5 block font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -132,7 +132,7 @@ export default async function AdminReportsPage({
       {/* Chart card */}
       <div className="border border-border bg-surface px-6 pt-6 pb-4">
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-          <h2 className="font-serif text-[18px] leading-none">每日營收</h2>
+          <h2 className="text-[18px] leading-none">每日營收</h2>
           {summary.peakDay ? (
             <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">
               峰值 · {dateFormatter.format(new Date(summary.peakDay.date))}

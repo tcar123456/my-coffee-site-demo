@@ -19,7 +19,7 @@ export default function AdminPromoNewPage() {
           <span className="mx-3 text-border">/</span>
           <span className="text-accent">新增</span>
         </div>
-        <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+        <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
           新增優惠碼
         </h1>
         <p className="mt-3 max-w-[60ch] text-[13px] leading-[1.55] text-fg-2">

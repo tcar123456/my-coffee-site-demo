@@ -94,7 +94,7 @@ export function PlaceOrderButton({
               className="mt-1.5 size-4 accent-accent"
             />
             <div className="flex-1">
-              <span className="font-serif text-[18px]">
+              <span className="text-[18px]">
                 {PAYMENT_METHOD_LABELS[key]}
               </span>
               <p className="mt-1.5 text-[13px] leading-[1.55] text-muted">

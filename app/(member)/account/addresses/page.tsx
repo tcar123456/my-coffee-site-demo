@@ -22,7 +22,7 @@ export default async function AddressesPage() {
             <span className="mx-3 text-border">/</span>
             地址管理
           </div>
-          <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
+          <h1 className="text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
             地址管理
           </h1>
           <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">

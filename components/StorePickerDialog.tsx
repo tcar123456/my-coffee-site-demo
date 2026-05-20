@@ -5,9 +5,10 @@
 // 不真接綠界 StoreMap（決議 2026-05-20）：跨網域 + dev tunnel + cart-empty 守門等踩坑成本高。
 // design 對齊 admin modal 風格：固定置中、半透明黑幕、border-border bg-surface。
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { getStoresByChain } from "@/lib/logistics/store-mock";
 import type { MockStore } from "@/lib/logistics/types";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 export interface PickedStore {
   storeId: string;
@@ -26,6 +27,9 @@ export function StorePickerDialog({
   onPick: (store: PickedStore) => void;
   onClose: () => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, open);
+
   // ESC 關閉
   useEffect(() => {
     if (!open) return;
@@ -40,6 +44,7 @@ export function StorePickerDialog({
 
   const stores = getStoresByChain(chain);
   const chainLabel = chain === "UNIMART" ? "7-11" : "全家";
+  const titleId = "store-picker-title";
 
   return (
     <div
@@ -47,6 +52,10 @@ export function StorePickerDialog({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className="relative w-full max-w-[520px] border border-border bg-surface"
         onClick={(e) => e.stopPropagation()}
       >
@@ -55,7 +64,7 @@ export function StorePickerDialog({
             <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
               選擇門市
             </div>
-            <h2 className="mt-1 font-serif text-[22px] leading-tight">
+            <h2 id={titleId} className="mt-1 text-[22px] leading-tight">
               {chainLabel} 取貨門市
             </h2>
           </div>
@@ -84,7 +93,7 @@ export function StorePickerDialog({
                 className="grid w-full grid-cols-[1fr_auto] items-center gap-3 border-b border-border px-6 py-4 text-left transition-colors hover:bg-surface-2"
               >
                 <div>
-                  <div className="font-serif text-[15px] leading-tight">
+                  <div className="text-[15px] leading-tight">
                     {s.storeName}
                   </div>
                   <div className="mt-1 font-mono text-[11px] leading-[1.5] text-fg-2">

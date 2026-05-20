@@ -24,7 +24,7 @@ export default function GlobalError({
       <div className="font-mono text-[11px] tracking-[0.24em] uppercase text-danger">
         Error · Runtime
       </div>
-      <h1 className="mt-6 font-serif text-[clamp(40px,5.5vw,72px)] leading-tight tracking-[-0.01em]">
+      <h1 className="mt-6 text-[clamp(40px,5.5vw,72px)] leading-tight tracking-[-0.01em]">
         頁面遇到了一點問題
       </h1>
       <p className="mt-5 max-w-[44ch] text-[15px] leading-[1.7] text-fg-2">

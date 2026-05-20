@@ -144,11 +144,11 @@ export default async function ProductDetailPage({
             {product.origin}
           </span>
 
-          <h1 className="font-serif text-[clamp(32px,3.6vw,52px)] leading-[1.05] tracking-[-0.01em] text-fg">
+          <h1 className="text-[clamp(32px,3.6vw,52px)] leading-[1.05] tracking-[-0.01em] text-fg">
             {product.name}
           </h1>
 
-          <p className="font-serif text-[18px] italic leading-[1.55] text-fg-2">
+          <p className="text-[18px] italic leading-[1.55] text-fg-2">
             {product.flavorNotes}
           </p>
 
@@ -207,7 +207,7 @@ export default async function ProductDetailPage({
               <h2 className="mb-3.5 font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
                 關於這支豆子
               </h2>
-              <p className="font-serif text-[15px] leading-[1.7] text-fg-2 whitespace-pre-line">
+              <p className="text-[15px] leading-[1.7] text-fg-2 whitespace-pre-line">
                 {product.description}
               </p>
             </section>
@@ -216,7 +216,7 @@ export default async function ProductDetailPage({
               <h2 className="mb-3.5 font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
                 關於這支豆子
               </h2>
-              <p className="font-serif text-[14px] italic leading-[1.7] text-muted">
+              <p className="text-[14px] italic leading-[1.7] text-muted">
                 詳細介紹整理中——若想先了解這支豆的細節，歡迎透過頁尾 LINE 與我們聯繫。
               </p>
             </section>

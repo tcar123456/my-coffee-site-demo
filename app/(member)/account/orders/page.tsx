@@ -66,7 +66,7 @@ export default async function OrdersPage() {
             <span className="mx-3 text-border">/</span>
             訂單記錄
           </div>
-          <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
+          <h1 className="text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
             訂單記錄
           </h1>
           <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -140,7 +140,7 @@ export default async function OrdersPage() {
 function EmptyOrders() {
   return (
     <div className="border border-border bg-surface px-[var(--gutter)] py-[clamp(64px,8vw,112px)] text-center">
-      <p className="font-serif text-[24px] leading-[1.4] text-fg-2">
+      <p className="text-[24px] leading-[1.4] text-fg-2">
         尚無訂單
       </p>
       <p className="mt-3 font-mono text-[12px] tracking-[0.08em] text-muted">
@@ -165,7 +165,7 @@ function Panel({
   return (
     <div className="border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border px-7 py-[22px]">
-        <h3 className="font-serif text-[22px]">{title}</h3>
+        <h3 className="text-[22px]">{title}</h3>
       </div>
       <div className="px-7 py-2">{children}</div>
     </div>

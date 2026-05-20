@@ -59,7 +59,7 @@ export function AddressList({ addresses }: { addresses: AddressRow[] }) {
   return (
     <>
       <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
-        <h2 className="font-serif text-[22px]">已儲存的地址</h2>
+        <h2 className="text-[22px]">已儲存的地址</h2>
         {addresses.length > 0 && (
           <button
             type="button"
@@ -86,7 +86,7 @@ export function AddressList({ addresses }: { addresses: AddressRow[] }) {
             <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
               尚未新增收件地址
             </div>
-            <h3 className="mt-2 font-serif text-[22px] leading-[1.2]">
+            <h3 className="mt-2 text-[22px] leading-[1.2]">
               新增第一筆地址
             </h3>
             <p className="mt-2 font-mono text-[12px] text-muted">
@@ -127,7 +127,7 @@ export function AddressList({ addresses }: { addresses: AddressRow[] }) {
                     {a.isDefault ? "預設地址" : "其他地址"}
                   </span>
                 </div>
-                <div className="font-serif text-[18px]">{a.recipient}</div>
+                <div className="text-[18px]">{a.recipient}</div>
                 <div className="text-[13px] text-fg-2">
                   <span className="block">
                     {a.zipCode} {a.city} {a.district}

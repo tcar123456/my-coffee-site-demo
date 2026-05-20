@@ -11,7 +11,7 @@ export default function GlobalLoading() {
         />
         Loading
       </div>
-      <p className="mt-6 font-serif text-[clamp(20px,2.2vw,28px)] leading-tight text-fg-2">
+      <p className="mt-6 text-[clamp(20px,2.2vw,28px)] leading-tight text-fg-2">
         正在為你溫杯…
       </p>
       <span className="sr-only" role="status" aria-live="polite">

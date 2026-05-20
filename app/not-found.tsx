@@ -10,7 +10,7 @@ export default function NotFound() {
       <div className="font-mono text-[11px] tracking-[0.24em] uppercase text-accent">
         Error · 404
       </div>
-      <h1 className="mt-6 font-serif text-[clamp(56px,8vw,128px)] leading-none tracking-[-0.02em]">
+      <h1 className="mt-6 text-[clamp(56px,8vw,128px)] leading-none tracking-[-0.02em]">
         找不到此頁
       </h1>
       <p className="mt-6 max-w-[40ch] text-[15px] leading-[1.7] text-fg-2">

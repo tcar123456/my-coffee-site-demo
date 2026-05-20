@@ -26,7 +26,7 @@ export default async function CheckoutAddressPage({
 
       {/* Header */}
       <section className="border-b border-border px-[var(--gutter)] pt-[clamp(40px,5vw,64px)] pb-[clamp(24px,3vw,32px)] text-center">
-        <h1 className="font-serif text-[clamp(36px,4.6vw,56px)] leading-none">
+        <h1 className="text-[clamp(36px,4.6vw,56px)] leading-none">
           選擇收件地址
         </h1>
         <div className="mt-3.5 font-mono text-[12px] tracking-[0.14em] text-muted">
@@ -38,7 +38,7 @@ export default async function CheckoutAddressPage({
         {addresses.length > 0 && (
           <>
             <div className="mb-6 flex items-center justify-between border-b border-border pb-4">
-              <h2 className="font-serif text-[22px]">已儲存的地址</h2>
+              <h2 className="text-[22px]">已儲存的地址</h2>
               {!showForm && (
                 <Link
                   href="/checkout/address?new=1"
@@ -68,7 +68,7 @@ export default async function CheckoutAddressPage({
                       選擇 →
                     </span>
                   </div>
-                  <div className="font-serif text-[18px]">{a.recipient}</div>
+                  <div className="text-[18px]">{a.recipient}</div>
                   <div className="text-[13px] text-fg-2">
                     <span className="block">
                       {a.zipCode} {a.city} {a.district}

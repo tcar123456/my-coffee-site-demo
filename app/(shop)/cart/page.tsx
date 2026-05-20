@@ -83,7 +83,7 @@ export default async function CartPage() {
 
       {/* Header */}
       <section className="border-b border-border px-[var(--gutter)] pt-[clamp(40px,5vw,64px)] pb-[clamp(24px,3vw,32px)] text-center">
-        <h1 className="font-serif text-[clamp(36px,4.6vw,56px)] leading-none">
+        <h1 className="text-[clamp(36px,4.6vw,56px)] leading-none">
           你的購物車
         </h1>
         <div className="mt-3.5 font-mono text-[12px] tracking-[0.14em] text-muted">
@@ -110,7 +110,7 @@ export default async function CartPage() {
               <span className="mb-3.5 block font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
                 你可能也會喜歡
               </span>
-              <h2 className="font-serif text-[32px] leading-[1.1]">
+              <h2 className="text-[32px] leading-[1.1]">
                 其他人結帳前還加了這些
               </h2>
             </div>
@@ -141,10 +141,10 @@ export default async function CartPage() {
                   <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
                     {item.origin}
                   </span>
-                  <h3 className="font-serif text-[20px] leading-[1.2] text-fg">
+                  <h3 className="text-[20px] leading-[1.2] text-fg">
                     {item.name}
                   </h3>
-                  <p className="font-serif text-[13px] italic leading-[1.5] text-fg-2">
+                  <p className="text-[13px] italic leading-[1.5] text-fg-2">
                     {item.notes}
                   </p>
                   <div className="mt-auto flex items-end justify-between border-t border-border pt-4">

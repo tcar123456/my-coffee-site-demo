@@ -23,7 +23,7 @@ export default async function WishlistPage() {
             <span className="mx-3 text-border">/</span>
             收藏豆款
           </div>
-          <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
+          <h1 className="text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
             收藏豆款
           </h1>
           <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -36,7 +36,7 @@ export default async function WishlistPage() {
       <section className="mx-auto max-w-[var(--max)] px-[var(--gutter)] pt-[clamp(32px,4vw,56px)] pb-[clamp(64px,8vw,112px)]">
         {items.length === 0 ? (
           <div className="border border-border bg-surface px-[var(--gutter)] py-[clamp(64px,8vw,112px)] text-center">
-            <p className="font-serif text-[24px] leading-[1.4] text-fg-2">
+            <p className="text-[24px] leading-[1.4] text-fg-2">
               尚未收藏豆款
             </p>
             <p className="mt-3 font-mono text-[12px] tracking-[0.08em] text-muted">
@@ -72,7 +72,7 @@ export default async function WishlistPage() {
                     </div>
                     <Link
                       href={`/products/${item.product.slug}`}
-                      className="mt-1 block font-serif text-[18px] leading-[1.2] text-fg hover:text-accent"
+                      className="mt-1 block text-[18px] leading-[1.2] text-fg hover:text-accent"
                     >
                       {item.product.name}
                     </Link>

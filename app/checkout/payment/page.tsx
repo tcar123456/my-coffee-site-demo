@@ -133,7 +133,7 @@ export default async function CheckoutPaymentPage({
       <CheckoutHeader currentStep={3} />
 
       <section className="border-b border-border px-[var(--gutter)] pt-[clamp(40px,5vw,64px)] pb-[clamp(24px,3vw,32px)] text-center">
-        <h1 className="font-serif text-[clamp(36px,4.6vw,56px)] leading-none">
+        <h1 className="text-[clamp(36px,4.6vw,56px)] leading-none">
           確認訂單
         </h1>
         <div className="mt-3.5 font-mono text-[12px] tracking-[0.14em] text-muted">
@@ -150,7 +150,7 @@ export default async function CheckoutPaymentPage({
               <div className="mb-2 font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
                 收件地址
               </div>
-              <div className="font-serif text-[18px]">{address.recipient}</div>
+              <div className="text-[18px]">{address.recipient}</div>
               <div className="mt-1 text-[13px] text-fg-2">
                 <span className="block">
                   {address.zipCode} {address.city} {address.district}
@@ -175,12 +175,12 @@ export default async function CheckoutPaymentPage({
               <div className="mb-2 font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
                 配送方式
               </div>
-              <div className="font-serif text-[18px]">
+              <div className="text-[18px]">
                 {SHIPPING_METHOD_LABELS[shippingMethod]}
               </div>
               {isCvs && cvsStoreName && (
                 <div className="mt-2 text-[13px] text-fg-2">
-                  <span className="block font-serif">門市 · {cvsStoreName}</span>
+                  <span className="block">門市 · {cvsStoreName}</span>
                   <span className="mt-0.5 block font-mono text-[11px] leading-[1.5] text-muted">
                     {cvsAddress}
                   </span>
@@ -205,7 +205,7 @@ export default async function CheckoutPaymentPage({
           {/* Items */}
           <div className="border border-border bg-surface">
             <div className="border-b border-border px-7 py-[22px]">
-              <h3 className="font-serif text-[22px]">商品明細</h3>
+              <h3 className="text-[22px]">商品明細</h3>
               <div className="mt-1 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
                 {items.length} 項商品 ·{" "}
                 {items.reduce((s, i) => s + i.qty, 0)} 件
@@ -229,7 +229,7 @@ export default async function CheckoutPaymentPage({
                       <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-muted">
                         {line.product.origin}
                       </div>
-                      <div className="mt-1 font-serif text-[16px] leading-[1.3]">
+                      <div className="mt-1 text-[16px] leading-[1.3]">
                         {line.product.name}
                       </div>
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] text-fg-2">
@@ -260,7 +260,7 @@ export default async function CheckoutPaymentPage({
 
           {/* Payment method + place order */}
           <div>
-            <h3 className="mb-5 font-serif text-[22px]">付款方式</h3>
+            <h3 className="mb-5 text-[22px]">付款方式</h3>
             <PlaceOrderButton
               addressId={address.id}
               shippingMethod={shippingMethod}
@@ -283,7 +283,7 @@ export default async function CheckoutPaymentPage({
 
         {/* Right: total summary */}
         <aside className="sticky top-20 self-start border border-border bg-surface p-8 max-[900px]:static">
-          <h3 className="font-serif text-[22px] leading-tight">訂單明細</h3>
+          <h3 className="text-[22px] leading-tight">訂單明細</h3>
           <div className="mt-1 mb-6 border-b border-border pb-6 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
             Order Summary
           </div>

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { AddressForm } from "@/components/AddressForm";
 import { createAddress, updateAddress, listAddresses } from "@/app/actions/address";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 type AddressRow = Awaited<ReturnType<typeof listAddresses>>[number];
 
@@ -23,6 +24,8 @@ type Props =
 export function AddressFormDialog(props: Props) {
   const { mode, onClose, onSuccess } = props;
   const overlayRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, true);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -51,9 +54,12 @@ export function AddressFormDialog(props: Props) {
       aria-label={title}
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[oklch(8%_0.005_250_/_0.78)] backdrop-blur-[2px] px-[var(--gutter)] py-[clamp(40px,8vh,96px)]"
     >
-      <div className="w-full max-w-[640px] border border-border bg-surface">
+      <div
+        ref={dialogRef}
+        className="w-full max-w-[640px] border border-border bg-surface"
+      >
         <div className="flex items-center justify-between border-b border-border px-7 py-[18px]">
-          <h3 className="font-serif text-[22px]">{title}</h3>
+          <h3 className="text-[22px]">{title}</h3>
           <button
             type="button"
             onClick={onClose}

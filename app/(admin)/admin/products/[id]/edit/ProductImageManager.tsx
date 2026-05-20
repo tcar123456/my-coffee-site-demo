@@ -139,7 +139,7 @@ export function ProductImageManager({
   return (
     <section className="border border-border bg-surface">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-7 py-[18px]">
-        <h2 className="font-serif text-[20px] leading-none">商品圖片</h2>
+        <h2 className="text-[20px] leading-none">商品圖片</h2>
         <span className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">
           {images.length} 張 · 最多 5 MB / 張 · JPEG / PNG / WebP
         </span>

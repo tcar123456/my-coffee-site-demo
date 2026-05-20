@@ -126,7 +126,7 @@ export default async function AccountPage() {
       <section className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-[var(--max)] grid-cols-[auto_1fr_auto] items-center gap-8 px-[var(--gutter)] py-[clamp(40px,5vw,64px)] max-[720px]:grid-cols-[auto_1fr]">
           <div
-            className="flex size-20 items-center justify-center rounded-full border border-border-hi font-serif text-[32px] text-accent"
+            className="flex size-20 items-center justify-center rounded-full border border-border-hi text-[32px] text-accent"
             style={{
               background:
                 "linear-gradient(135deg, oklch(35% 0.06 60), oklch(22% 0.03 50))",
@@ -135,7 +135,7 @@ export default async function AccountPage() {
             {initials}
           </div>
           <div>
-            <h1 className="font-serif text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
+            <h1 className="text-[clamp(28px,3.6vw,44px)] leading-none tracking-[-0.01em]">
               早安，{displayName}
             </h1>
             <div className="mt-3 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -154,7 +154,7 @@ export default async function AccountPage() {
             <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
               會員等級
             </div>
-            <div className="mt-1.5 mb-1 font-serif text-[32px] text-accent">
+            <div className="mt-1.5 mb-1 text-[32px] text-accent">
               {TIER_LABELS[tier]}
             </div>
             <div className="font-mono text-[12px] text-fg-2">
@@ -211,7 +211,7 @@ export default async function AccountPage() {
                 <div className="mb-3.5 font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
                   進行中 — Active Subscription
                 </div>
-                <h2 className="mb-3.5 font-serif text-[30px] leading-[1.1]">
+                <h2 className="mb-3.5 text-[30px] leading-[1.1]">
                   {planLabel[activeSubscription.plan]}
                 </h2>
                 <p className="mb-[22px] max-w-[44ch] leading-[1.6] text-fg-2">
@@ -240,7 +240,7 @@ export default async function AccountPage() {
             </div>
           ) : (
             <div className="border border-border bg-surface p-8 text-center">
-              <p className="font-serif text-[20px] leading-[1.4] text-fg-2">
+              <p className="text-[20px] leading-[1.4] text-fg-2">
                 尚未訂閱任何方案
               </p>
               <div className="mt-4 flex justify-center">
@@ -345,7 +345,7 @@ export default async function AccountPage() {
                       <div className="mb-1.5 font-mono text-[10px] tracking-[0.16em] uppercase text-accent">
                         {a.isDefault ? "預設" : "其他"}
                       </div>
-                      <div className="font-serif text-[18px]">{a.recipient}</div>
+                      <div className="text-[18px]">{a.recipient}</div>
                       <div className="text-[13px] text-fg-2">
                         <span className="block">
                           {a.zipCode} {a.city} {a.district}
@@ -396,7 +396,7 @@ export default async function AccountPage() {
                         <div className="font-mono text-[10px] tracking-[0.12em] uppercase text-muted">
                           N° {numLabel} · {originLabel}
                         </div>
-                        <div className="font-serif text-[15px]">
+                        <div className="text-[15px]">
                           {item.product.name}
                         </div>
                       </div>
@@ -498,7 +498,7 @@ function Panel({
   return (
     <div className="border border-border bg-surface">
       <div className="flex items-center justify-between border-b border-border px-7 py-[22px]">
-        <h3 className="font-serif text-[22px]">{title}</h3>
+        <h3 className="text-[22px]">{title}</h3>
         {action && (
           <Link
             href={action.href}

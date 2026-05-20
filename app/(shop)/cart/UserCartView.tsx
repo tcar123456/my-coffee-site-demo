@@ -102,7 +102,7 @@ export function UserCartView({
                   <div className="mb-2 font-mono text-[10px] tracking-[0.16em] uppercase text-muted">
                     {line.product.origin}
                   </div>
-                  <h2 className="mb-3 font-serif text-[22px] leading-[1.2]">
+                  <h2 className="mb-3 text-[22px] leading-[1.2]">
                     {line.product.name}
                   </h2>
 
@@ -211,7 +211,7 @@ export function UserCartView({
 function EmptyCart() {
   return (
     <section className="mx-auto max-w-[var(--max)] px-[var(--gutter)] py-[clamp(80px,10vw,140px)] text-center">
-      <p className="font-serif text-[24px] leading-[1.4] text-fg-2">
+      <p className="text-[24px] leading-[1.4] text-fg-2">
         購物車目前是空的
       </p>
       <p className="mt-3 font-mono text-[12px] tracking-[0.08em] text-muted">
@@ -241,7 +241,7 @@ function CartSummary({
 
   return (
     <aside className="sticky top-20 border border-border bg-surface p-8 max-[900px]:static">
-      <h3 className="font-serif text-[26px] leading-tight">訂單明細</h3>
+      <h3 className="text-[26px] leading-tight">訂單明細</h3>
       <div className="mt-1 mb-6 border-b border-border pb-6 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
         Order Summary
       </div>

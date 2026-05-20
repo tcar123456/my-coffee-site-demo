@@ -70,7 +70,7 @@ export default async function CheckoutShippingPage({
 
       {/* Header */}
       <section className="border-b border-border px-[var(--gutter)] pt-[clamp(40px,5vw,64px)] pb-[clamp(24px,3vw,32px)] text-center">
-        <h1 className="font-serif text-[clamp(36px,4.6vw,56px)] leading-none">
+        <h1 className="text-[clamp(36px,4.6vw,56px)] leading-none">
           選擇配送方式
         </h1>
         <div className="mt-3.5 font-mono text-[12px] tracking-[0.14em] text-muted">
@@ -85,7 +85,7 @@ export default async function CheckoutShippingPage({
             <div className="mb-2 font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
               收件地址
             </div>
-            <div className="font-serif text-[18px]">{address.recipient}</div>
+            <div className="text-[18px]">{address.recipient}</div>
             <div className="mt-1 text-[13px] text-fg-2">
               <span className="block">
                 {address.zipCode} {address.city} {address.district}

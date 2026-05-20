@@ -76,7 +76,7 @@ export default async function AdminOrderPrintPage({
             <div className="font-mono text-[10px] tracking-[0.32em] uppercase text-neutral-600">
               MUBEI 暮焙 · COFFEE ROASTER
             </div>
-            <h1 className="mt-2 font-serif text-[36px] leading-none tracking-[-0.01em]">
+            <h1 className="mt-2 text-[36px] leading-none tracking-[-0.01em]">
               出貨單
             </h1>
             <div className="mt-2 font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-700">
@@ -157,7 +157,7 @@ export default async function AdminOrderPrintPage({
 
         {/* ============ Items ============ */}
         <section className="mt-8">
-          <h2 className="mb-3 font-serif text-[18px]">
+          <h2 className="mb-3 text-[18px]">
             品項明細 / Items
           </h2>
           <table className="w-full border-collapse text-[13px]">
@@ -183,7 +183,7 @@ export default async function AdminOrderPrintPage({
                 return (
                   <tr key={item.id} className="border-b border-neutral-300">
                     <td className="py-3 pr-3 align-top">
-                      <div className="font-serif text-[14px] leading-[1.4]">
+                      <div className="text-[14px] leading-[1.4]">
                         {item.productName}
                       </div>
                       <div className="mt-0.5 font-mono text-[10px] text-neutral-600">
@@ -324,7 +324,7 @@ function Block({
 }) {
   return (
     <div>
-      <h2 className="mb-3 border-b border-black pb-1.5 font-serif text-[16px]">
+      <h2 className="mb-3 border-b border-black pb-1.5 text-[16px]">
         {title}
       </h2>
       <div>{children}</div>

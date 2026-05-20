@@ -180,7 +180,7 @@ export default async function ProductsPage({
               <span className="px-2 text-dim">/</span>
               <span>單品咖啡</span>
             </div>
-            <h1 className="font-serif text-[clamp(36px,4.6vw,60px)] leading-none tracking-[-0.02em]">
+            <h1 className="text-[clamp(36px,4.6vw,60px)] leading-none tracking-[-0.02em]">
               當季 · 全部單品
             </h1>
             <p className="mt-3.5 max-w-[52ch] text-[15px] leading-[1.55] text-fg-2">
@@ -214,7 +214,7 @@ export default async function ProductsPage({
         <div>
           {products.length === 0 ? (
             <div className="border border-border bg-surface px-8 py-16 text-center">
-              <p className="font-serif text-[20px] text-fg-2">沒有符合條件的單品</p>
+              <p className="text-[20px] text-fg-2">沒有符合條件的單品</p>
               <p className="mt-2 font-mono text-[11px] tracking-[0.08em] text-muted">
                 試著放寬篩選條件，或清除篩選查看所有單品。
               </p>
@@ -266,10 +266,10 @@ export default async function ProductsPage({
                       <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
                         {p.origin}
                       </span>
-                      <h3 className="font-serif text-[20px] leading-[1.2] text-fg">
+                      <h3 className="text-[20px] leading-[1.2] text-fg">
                         {p.name}
                       </h3>
-                      <p className="font-serif text-[13px] italic leading-[1.5] text-fg-2">
+                      <p className="text-[13px] italic leading-[1.5] text-fg-2">
                         {p.flavorNotes}
                       </p>
                       <div className="mt-auto flex items-end justify-between border-t border-border pt-4">

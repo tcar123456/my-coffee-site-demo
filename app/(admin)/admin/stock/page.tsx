@@ -83,7 +83,7 @@ export default async function AdminStockPage({
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+            <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
               庫存管理
             </h1>
             <span className="mt-2.5 block font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -163,7 +163,7 @@ export default async function AdminStockPage({
                       <Link
                         href={`/products/${p.slug}`}
                         prefetch={false}
-                        className="truncate font-serif text-[18px] leading-[1.3] hover:text-accent"
+                        className="truncate text-[18px] leading-[1.3] hover:text-accent"
                       >
                         {p.name}
                       </Link>

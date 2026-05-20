@@ -52,7 +52,7 @@ export default async function AdminProductEditPage({
         </div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+            <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
               {product.name}
             </h1>
             <div className="mt-2.5 flex items-center gap-3 font-mono text-[11px] tracking-[0.14em] uppercase">

@@ -114,7 +114,7 @@ export function Footer() {
               <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
                 LINE 官方帳號
               </div>
-              <div className="mt-1.5 font-serif text-[15px] leading-tight">
+              <div className="mt-1.5 text-[15px] leading-tight">
                 掃碼或點擊加好友
               </div>
               <a

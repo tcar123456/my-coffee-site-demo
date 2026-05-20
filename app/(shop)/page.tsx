@@ -109,14 +109,14 @@ export default function HomePage() {
               </span>
             </div>
 
-            <h1 className="mb-7 font-serif text-[clamp(44px,6.4vw,92px)] leading-[0.98] tracking-[-0.025em]">
+            <h1 className="mb-7 text-[clamp(44px,6.4vw,92px)] leading-[0.98] tracking-[-0.025em]">
               每一杯，
               <br />
               都是一段
               <em className="not-italic text-accent italic">產地手記</em>。
             </h1>
 
-            <p className="mb-9 max-w-[38ch] font-serif text-[clamp(17px,1.4vw,20px)] leading-[1.55] text-fg-2">
+            <p className="mb-9 max-w-[38ch] text-[clamp(17px,1.4vw,20px)] leading-[1.55] text-fg-2">
               我們向 9 個國家的小型莊園採購生豆，每週一在台中烘焙、隔日出貨。從淺焙的明亮花果，到深焙的菸草與黑糖 — 替你挑出 8 支當季最值得喝的單品。
             </p>
 
@@ -182,14 +182,14 @@ export default function HomePage() {
                   <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
                     {bean.origin}
                   </span>
-                  <h3 className="font-serif text-[22px] leading-[1.15] text-fg">
+                  <h3 className="text-[22px] leading-[1.15] text-fg">
                     {bean.name.map((line, i) => (
                       <span key={i} className="block">
                         {line}
                       </span>
                     ))}
                   </h3>
-                  <p className="font-serif text-[13px] italic leading-[1.5] text-fg-2">
+                  <p className="text-[13px] italic leading-[1.5] text-fg-2">
                     {bean.notes}
                   </p>
                   <div className="mt-auto flex items-end justify-between border-t border-border pt-[18px]">
@@ -235,7 +235,7 @@ export default function HomePage() {
                   {d.date}
                 </span>
                 <h3
-                  className={`font-serif text-fg ${d.lead ? "text-[32px] leading-[1.1]" : "text-[22px] leading-[1.2]"}`}
+                  className={`text-fg ${d.lead ? "text-[32px] leading-[1.1]" : "text-[22px] leading-[1.2]"}`}
                 >
                   {d.title}
                 </h3>
@@ -256,7 +256,7 @@ export default function HomePage() {
             <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
               訂閱配送 — Subscription
             </span>
-            <p className="mt-6 border-l-2 border-accent pl-8 font-serif text-[clamp(28px,3.4vw,44px)] leading-[1.18] text-fg">
+            <p className="mt-6 border-l-2 border-accent pl-8 text-[clamp(28px,3.4vw,44px)] leading-[1.18] text-fg">
               「讓每個禮拜的早晨，
               <br />
               都從一支
@@ -282,7 +282,7 @@ export default function HomePage() {
                   {plan.no}
                 </span>
                 <div>
-                  <div className="mb-1 font-serif text-[18px]">{plan.name}</div>
+                  <div className="mb-1 text-[18px]">{plan.name}</div>
                   <div className="font-mono text-[12px] tracking-[0.04em] text-muted">
                     {plan.detail}
                   </div>
@@ -310,7 +310,7 @@ export default function HomePage() {
               <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
                 產地索引 — Origin Index
               </span>
-              <h2 className="mt-3.5 font-serif text-[28px]">
+              <h2 className="mt-3.5 text-[28px]">
                 9 個國家，14 座小型莊園
               </h2>
             </div>
@@ -331,7 +331,7 @@ export default function HomePage() {
                 <div className="mb-3 font-mono text-[10px] tracking-[0.16em] text-accent">
                   {o.lat}
                 </div>
-                <div className="mb-1.5 font-serif text-[18px]">{o.country}</div>
+                <div className="mb-1.5 text-[18px]">{o.country}</div>
                 <div className="font-mono text-[12px] tracking-[0.04em] text-muted">
                   {o.region}
                 </div>
@@ -372,7 +372,7 @@ function SectionHead({
         <span className="mb-3.5 block font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
           {eyebrow}
         </span>
-        <h2 className="max-w-[16ch] font-serif text-[clamp(30px,3.8vw,48px)] leading-[1.05]">
+        <h2 className="max-w-[16ch] text-[clamp(30px,3.8vw,48px)] leading-[1.05]">
           {title}
         </h2>
       </div>

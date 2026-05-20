@@ -11,7 +11,7 @@ export function Heading({
 }) {
   return (
     <header className="mb-12 border-b border-border pb-8">
-      <h1 className="font-serif text-[clamp(36px,4.6vw,56px)] leading-[1.05] tracking-[-0.01em]">
+      <h1 className="text-[clamp(36px,4.6vw,56px)] leading-[1.05] tracking-[-0.01em]">
         {title}
       </h1>
       <div className="mt-4 font-mono text-[11px] tracking-[0.16em] uppercase text-muted">
@@ -32,7 +32,7 @@ export function Section({
 }) {
   return (
     <section className="mb-12">
-      <h2 className="mb-5 flex items-baseline gap-3 font-serif text-[22px] leading-tight">
+      <h2 className="mb-5 flex items-baseline gap-3 text-[22px] leading-tight">
         <span className="font-mono text-[11px] tracking-[0.18em] text-accent">
           N° {num}
         </span>

@@ -19,7 +19,9 @@ export default async function ShopLayout({
         ctaHref="/products"
         ctaLabel="前往訂購 →"
       />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">
+        {children}
+      </main>
       <Footer />
     </>
   );

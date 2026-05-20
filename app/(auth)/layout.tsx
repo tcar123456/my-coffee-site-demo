@@ -25,7 +25,10 @@ export default function AuthLayout({
           </Link>
         </div>
       </header>
-      <main className="flex flex-1 items-center justify-center px-[var(--gutter)] py-[clamp(48px,8vw,96px)]">
+      <main
+        id="main-content"
+        className="flex flex-1 items-center justify-center px-[var(--gutter)] py-[clamp(48px,8vw,96px)]"
+      >
         {children}
       </main>
     </div>

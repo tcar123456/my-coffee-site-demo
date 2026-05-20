@@ -90,14 +90,14 @@ export default function BrandPage() {
             <div className="mb-6 font-mono text-[11px] tracking-[0.22em] uppercase text-accent">
               品牌故事 / Vol. 24
             </div>
-            <h1 className="mb-7 font-serif text-[clamp(44px,6vw,88px)] leading-[0.96] tracking-[-0.025em]">
+            <h1 className="mb-7 text-[clamp(44px,6vw,88px)] leading-[0.96] tracking-[-0.025em]">
               從一封來自
               <em className="not-italic italic text-accent">耶加雪菲</em>
               的信，
               <br />
               到台中民權路上的烘焙鼓。
             </h1>
-            <p className="max-w-[36ch] font-serif text-[clamp(18px,1.6vw,22px)] leading-[1.5] text-fg-2">
+            <p className="max-w-[36ch] text-[clamp(18px,1.6vw,22px)] leading-[1.5] text-fg-2">
               2019 年，我們把一台 1 公斤的 Probat 烘豆機搬進民權路的老倉庫。七年後，這裡每週一仍會準時亮燈、準時飄出焦糖與堅果的氣味。這是暮焙的故事 — 也是九個產區、二十七位農夫的故事。
             </p>
           </div>
@@ -113,7 +113,7 @@ export default function BrandPage() {
                 </span>
                 <span className="text-fg-2">
                   {m.strong && (
-                    <strong className="mb-0.5 block font-serif text-[16px] font-normal text-fg">
+                    <strong className="mb-0.5 block text-[16px] font-normal text-fg">
                       {m.strong}
                     </strong>
                   )}
@@ -211,7 +211,7 @@ export default function BrandPage() {
           {promises.map((p, i) => (
             <li
               key={p.title}
-              className={`relative border-b border-border py-[18px] pr-0 pl-14 font-serif text-[17px] leading-[1.55] text-fg-2 ${
+              className={`relative border-b border-border py-[18px] pr-0 pl-14 text-[17px] leading-[1.55] text-fg-2 ${
                 i === 0 ? "border-t" : ""
               }`}
             >
@@ -241,7 +241,7 @@ export default function BrandPage() {
         </Para>
 
         {/* Inline blockquote (sidebar style) */}
-        <aside className="my-[clamp(32px,4vw,48px)] border-l-2 border-border-hi bg-surface px-7 py-6 font-serif text-[18px] italic leading-[1.55] text-fg-2">
+        <aside className="my-[clamp(32px,4vw,48px)] border-l-2 border-border-hi bg-surface px-7 py-6 text-[18px] italic leading-[1.55] text-fg-2">
           我做這份工作最在意的，從來不是手沖大賽的金杯獎、也不是 SCA 的 88 分評鑑。我在意的是 — 你打開包裝那一刻，是不是聞到了我們在烘焙坊聞到的那股香氣。如果是，那這支豆就值了。
           <cite className="mt-3 block font-mono text-[10px] not-italic tracking-[0.18em] uppercase text-muted">
             — 林子翔，《暮焙編年第三卷 · 〈火與光〉》
@@ -262,18 +262,18 @@ export default function BrandPage() {
 
       {/* ============ Author footer ============ */}
       <aside className="mx-auto mt-[clamp(64px,8vw,96px)] grid max-w-[720px] grid-cols-[80px_1fr] items-start gap-7 border-y border-border px-[var(--gutter)] py-[clamp(32px,4vw,48px)] max-[640px]:grid-cols-1">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[linear-gradient(135deg,oklch(38%_0.06_60),oklch(20%_0.03_50))] font-serif text-[28px] text-accent">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[linear-gradient(135deg,oklch(38%_0.06_60),oklch(20%_0.03_50))] text-[28px] text-accent">
           林
         </div>
         <div>
           <div className="mb-2 font-mono text-[10px] tracking-[0.22em] uppercase text-muted">
             關於作者
           </div>
-          <div className="mb-1 font-serif text-[22px]">林子翔</div>
+          <div className="mb-1 text-[22px]">林子翔</div>
           <div className="mb-3.5 font-mono text-[11px] tracking-[0.12em] text-accent">
             暮焙主理人 · 首席烘豆師
           </div>
-          <p className="font-serif text-[15px] leading-[1.6] text-fg-2">
+          <p className="text-[15px] leading-[1.6] text-fg-2">
             新竹清華大學資工系畢，前科技公司軟體工程師。2018 年走訪衣索比亞 Yirgacheffe 後辭職創業，2019 年於台中創立暮焙烘焙坊。SCA 認證 Q-Grader、CQI 杯測師。著有《一支豆子的七年》（2023，行人出版）。
           </p>
         </div>
@@ -286,7 +286,7 @@ export default function BrandPage() {
             <span className="mb-3 block font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
               延伸閱讀
             </span>
-            <h2 className="font-serif text-[clamp(26px,3vw,36px)] leading-none">
+            <h2 className="text-[clamp(26px,3vw,36px)] leading-none">
               更多暮焙編年
             </h2>
           </div>
@@ -309,10 +309,10 @@ export default function BrandPage() {
               <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent">
                 {r.category}
               </span>
-              <h3 className="font-serif text-[20px] leading-[1.2] text-fg">
+              <h3 className="text-[20px] leading-[1.2] text-fg">
                 {r.title}
               </h3>
-              <p className="font-serif text-[14px] italic leading-[1.55] text-fg-2">
+              <p className="text-[14px] italic leading-[1.55] text-fg-2">
                 {r.excerpt}
               </p>
               <span className="mt-auto pt-1 font-mono text-[10px] tracking-[0.18em] uppercase text-muted">
@@ -325,7 +325,7 @@ export default function BrandPage() {
 
       {/* ============ Tail ribbon ============ */}
       <section className="mx-auto max-w-[var(--max)] border-t border-border px-[var(--gutter)] py-[clamp(64px,7vw,96px)] text-center">
-        <div className="mb-2 font-serif text-[clamp(40px,5vw,64px)] leading-none tracking-[0.06em]">
+        <div className="mb-2 text-[clamp(40px,5vw,64px)] leading-none tracking-[0.06em]">
           每一杯，
           <em className="not-italic text-accent">都是一段路</em>。
         </div>
@@ -349,7 +349,7 @@ export default function BrandPage() {
 
 function SectionHeading({ num, title }: { num: string; title: string }) {
   return (
-    <h2 className="relative mt-[clamp(48px,6vw,72px)] mb-6 border-t border-border pt-[clamp(24px,3vw,32px)] font-serif text-[clamp(28px,3.2vw,40px)] leading-[1.1] tracking-[-0.015em]">
+    <h2 className="relative mt-[clamp(48px,6vw,72px)] mb-6 border-t border-border pt-[clamp(24px,3vw,32px)] text-[clamp(28px,3.2vw,40px)] leading-[1.1] tracking-[-0.015em]">
       <span className="mb-3.5 block font-mono text-[11px] tracking-[0.22em] uppercase text-accent">
         {num}
       </span>
@@ -360,7 +360,7 @@ function SectionHeading({ num, title }: { num: string; title: string }) {
 
 function Para({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-[22px] font-serif text-[18px] leading-[1.65] text-fg-2 text-pretty">
+    <p className="mb-[22px] text-[18px] leading-[1.65] text-fg-2 text-pretty">
       {children}
     </p>
   );
@@ -369,7 +369,7 @@ function Para({ children }: { children: React.ReactNode }) {
 // First paragraph variant — adds a drop-cap on its first letter
 function Lede({ children }: { children: React.ReactNode }) {
   return (
-    <p className="mb-[22px] font-serif text-[18px] leading-[1.65] text-fg-2 text-pretty [&::first-letter]:float-left [&::first-letter]:mt-1.5 [&::first-letter]:mr-3 [&::first-letter]:font-serif [&::first-letter]:text-[78px] [&::first-letter]:leading-[0.85] [&::first-letter]:text-accent">
+    <p className="mb-[22px] text-[18px] leading-[1.65] text-fg-2 text-pretty [&::first-letter]:float-left [&::first-letter]:mt-1.5 [&::first-letter]:mr-3 [&::first-letter]:text-[78px] [&::first-letter]:leading-[0.85] [&::first-letter]:text-accent">
       {children}
     </p>
   );
@@ -378,7 +378,7 @@ function Lede({ children }: { children: React.ReactNode }) {
 function PullQuote({ text, source }: { text: string; source: string }) {
   return (
     <blockquote className="my-[clamp(48px,6vw,72px)] border-l-2 border-accent pl-7">
-      <p className="mb-4 font-serif text-[clamp(26px,3vw,38px)] leading-[1.2] tracking-[-0.01em] text-fg">
+      <p className="mb-4 text-[clamp(26px,3vw,38px)] leading-[1.2] tracking-[-0.01em] text-fg">
         <span className="relative top-[0.18em] mr-1 text-[1.4em] leading-[0] text-accent">
           &ldquo;
         </span>

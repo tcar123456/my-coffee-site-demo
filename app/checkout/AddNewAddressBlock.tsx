@@ -42,7 +42,7 @@ export function AddNewAddressBlock({
         <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
           新增收件地址
         </div>
-        <h3 className="mt-2 font-serif text-[22px] leading-[1.2]">
+        <h3 className="mt-2 text-[22px] leading-[1.2]">
           填寫收件資訊
         </h3>
       </div>

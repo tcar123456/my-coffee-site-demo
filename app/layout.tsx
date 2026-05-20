@@ -66,7 +66,12 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;500;600&display=swap"
         />
       </head>
-      <body className="flex min-h-screen flex-col bg-bg text-fg">{children}</body>
+      <body className="flex min-h-screen flex-col bg-bg text-fg">
+        <a href="#main-content" className="skip-link">
+          跳到主要內容 ↓
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

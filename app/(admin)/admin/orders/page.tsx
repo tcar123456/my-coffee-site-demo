@@ -83,7 +83,7 @@ export default async function AdminOrdersPage({
               ← 後台總覽
             </Link>
           </div>
-          <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+          <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
             訂單管理
           </h1>
           <span className="mt-2.5 block font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -159,7 +159,7 @@ export default async function AdminOrdersPage({
       {/* Table or empty */}
       {rows.length === 0 ? (
         <div className="border border-border bg-surface px-6 py-[clamp(64px,8vw,112px)] text-center">
-          <p className="font-serif text-[22px] leading-[1.4] text-fg-2">
+          <p className="text-[22px] leading-[1.4] text-fg-2">
             沒有符合條件的訂單
           </p>
           <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-muted">

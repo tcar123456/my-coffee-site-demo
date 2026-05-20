@@ -105,7 +105,7 @@ export function ShippingForm({
                 />
                 <div className="flex-1">
                   <div className="flex items-baseline justify-between gap-3">
-                    <span className="font-serif text-[18px]">
+                    <span className="text-[18px]">
                       {SHIPPING_METHOD_LABELS[key]}
                     </span>
                     <span className="font-mono text-[13px] tabular-nums text-fg-2">
@@ -131,7 +131,7 @@ export function ShippingForm({
                   {pickedStore ? (
                     <div className="flex items-start justify-between gap-3 py-2">
                       <div className="text-[13px]">
-                        <div className="font-serif text-[15px] text-fg">
+                        <div className="text-[15px] text-fg">
                           {pickedStore.storeName}
                         </div>
                         <div className="mt-1 font-mono text-[11px] leading-[1.5] text-fg-2">
@@ -171,7 +171,7 @@ export function ShippingForm({
 
       {/* Summary */}
       <aside className="sticky top-20 self-start border border-border bg-surface p-8 max-[900px]:static">
-        <h3 className="font-serif text-[22px] leading-tight">運費試算</h3>
+        <h3 className="text-[22px] leading-tight">運費試算</h3>
         <div className="mt-1 mb-6 border-b border-border pb-6 font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
           Shipping Estimate
         </div>

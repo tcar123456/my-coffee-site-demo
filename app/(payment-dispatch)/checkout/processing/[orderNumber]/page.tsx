@@ -63,7 +63,7 @@ export default async function EcpayProcessingPage({
         <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
           Phase 6b · ECPay Sandbox
         </div>
-        <h1 className="mt-3 font-serif text-[28px] leading-tight">
+        <h1 className="mt-3 text-[28px] leading-tight">
           正在前往刷卡頁面…
         </h1>
         <p className="mt-3 text-[13px] leading-[1.7] text-fg-2">

@@ -16,7 +16,7 @@ export default async function LoginPage({
         <div className="mb-3 font-mono text-[11px] tracking-[0.18em] uppercase text-accent">
           會員登入 · Sign in
         </div>
-        <h1 className="font-serif text-[clamp(28px,3.4vw,40px)] leading-[1.1] tracking-[-0.01em]">
+        <h1 className="text-[clamp(28px,3.4vw,40px)] leading-[1.1] tracking-[-0.01em]">
           歡迎回來
         </h1>
         <p className="mt-3 text-[13px] text-fg-2">

@@ -52,7 +52,7 @@ export function PromoForm({
       {appliedCode ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className="font-serif text-[18px]">已套用 {appliedCode}</div>
+            <div className="text-[18px]">已套用 {appliedCode}</div>
             <div className="mt-1 font-mono text-[11px] tracking-[0.04em] text-muted">
               下方明細已扣抵
             </div>

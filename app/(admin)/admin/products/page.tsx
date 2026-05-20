@@ -73,7 +73,7 @@ export default async function AdminProductsPage({
 
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-serif text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
+            <h1 className="text-[clamp(28px,3vw,40px)] leading-none tracking-[-0.01em]">
               商品管理
             </h1>
             <span className="mt-2.5 block font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
@@ -155,7 +155,7 @@ export default async function AdminProductsPage({
       {/* Table or empty */}
       {rows.length === 0 ? (
         <div className="border border-border bg-surface px-6 py-[clamp(64px,8vw,112px)] text-center">
-          <p className="font-serif text-[22px] leading-[1.4] text-fg-2">
+          <p className="text-[22px] leading-[1.4] text-fg-2">
             沒有符合條件的商品
           </p>
           <p className="mt-3 font-mono text-[11px] tracking-[0.08em] text-muted">
@@ -283,7 +283,7 @@ function ProductRow({
 
       {/* 名稱 + slug */}
       <td className={`px-6 py-3 ${cellBorder}`}>
-        <div className="font-serif text-[15px] leading-[1.3] text-fg">
+        <div className="text-[15px] leading-[1.3] text-fg">
           {product.name}
         </div>
         <div className="mt-1 font-mono text-[10px] tracking-[0.06em] text-dim">
