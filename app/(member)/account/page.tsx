@@ -7,6 +7,7 @@ import { listAddresses } from "@/app/actions/address";
 import { listWishlist } from "@/app/actions/wishlist";
 import { getActiveSubscription } from "@/app/actions/subscription";
 import { signOutAction } from "@/app/actions/auth";
+import { TIER_LABELS, distanceToNextTier } from "@/lib/tier";
 import type {
   SubscriptionPlan,
   SubscriptionCadence,
@@ -65,6 +66,7 @@ export default async function AccountPage() {
     subscriptionTotalCount,
     wishlistTotalCount,
     addressTotalCount,
+    dbUser,
   ] = await Promise.all([
     listAddresses(),
     listWishlist(),
@@ -79,7 +81,15 @@ export default async function AccountPage() {
     prisma.subscription.count({ where: { userId } }),
     prisma.wishlistItem.count({ where: { userId } }),
     prisma.address.count({ where: { userId } }),
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { tier: true, lifetimeSpent: true },
+    }),
   ]);
+
+  const tier = dbUser?.tier ?? "TIER_01";
+  const lifetimeSpent = dbUser?.lifetimeSpent ?? 0;
+  const nextStep = distanceToNextTier(lifetimeSpent);
 
   const { name, email, id, role } = session.user;
   const displayName = name?.trim() || email?.split("@")[0] || "會員";
@@ -145,10 +155,12 @@ export default async function AccountPage() {
               會員等級
             </div>
             <div className="mt-1.5 mb-1 font-serif text-[32px] text-accent">
-              TIER 02
+              {TIER_LABELS[tier]}
             </div>
             <div className="font-mono text-[12px] text-fg-2">
-              預計 Phase 7 上線
+              {nextStep
+                ? `再 NT$ ${nextStep.remaining.toLocaleString("zh-TW")} 升等 ${TIER_LABELS[nextStep.nextTier]}`
+                : "已達最高等級"}
             </div>
           </div>
         </div>

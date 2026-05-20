@@ -13,16 +13,23 @@ import {
   type ShippingMethod,
 } from "@/lib/shipping";
 import { getGrindLabel, getPkgLabel } from "@/lib/cart-options";
+import { previewTierDiscount, TIER_LABELS } from "@/lib/tier";
+import { applyPromoCode } from "@/app/actions/promo";
 import { PlaceOrderButton } from "./PlaceOrderButton";
+import { PromoForm } from "./PromoForm";
 
-type SearchParams = Promise<{ addressId?: string; shipping?: string }>;
+type SearchParams = Promise<{
+  addressId?: string;
+  shipping?: string;
+  promo?: string;
+}>;
 
 export default async function CheckoutPaymentPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const { addressId, shipping } = await searchParams;
+  const { addressId, shipping, promo } = await searchParams;
   if (!addressId) redirect("/checkout/address");
   if (!shipping || !isShippingMethod(shipping)) {
     redirect(`/checkout/shipping?addressId=${addressId}`);
@@ -31,6 +38,12 @@ export default async function CheckoutPaymentPage({
 
   const session = await auth();
   const userId = session!.user!.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tier: true },
+  });
+  const tier = user?.tier ?? "TIER_01";
 
   const address = await prisma.address.findUnique({
     where: { id: addressId },
@@ -80,7 +93,18 @@ export default async function CheckoutPaymentPage({
     0,
   );
   const shippingFee = calculateShipping(subtotal, shippingMethod);
-  const total = subtotal + shippingFee;
+  const tierDiscount = previewTierDiscount(tier, subtotal);
+
+  // 只有 URL 帶 promo 才試算；server-side 直接套 applyPromoCode 拿結果
+  const promoResult = promo ? await applyPromoCode(promo) : null;
+  const appliedPromoCode =
+    promoResult && promoResult.ok ? promoResult.code : null;
+  const promoDiscount =
+    promoResult && promoResult.ok ? promoResult.discount : 0;
+  const promoError =
+    promoResult && !promoResult.ok ? promoResult.error : null;
+
+  const total = subtotal + shippingFee - tierDiscount - promoDiscount;
 
   const backToShippingHref = `/checkout/shipping?addressId=${addressId}&shipping=${shippingMethod}`;
 
@@ -203,12 +227,16 @@ export default async function CheckoutPaymentPage({
             </div>
           </div>
 
+          {/* Promo code island */}
+          <PromoForm appliedCode={appliedPromoCode} error={promoError} />
+
           {/* Payment method + place order */}
           <div>
             <h3 className="mb-5 font-serif text-[22px]">付款方式</h3>
             <PlaceOrderButton
               addressId={address.id}
               shippingMethod={shippingMethod}
+              promoCode={appliedPromoCode}
             />
 
             <div className="mt-6">
@@ -247,6 +275,28 @@ export default async function CheckoutPaymentPage({
               )}
             </span>
           </div>
+
+          {tierDiscount > 0 && (
+            <div className="flex items-baseline justify-between py-2.5 text-[14px]">
+              <span className="text-fg-2">
+                會員折抵 · {TIER_LABELS[tier]}
+              </span>
+              <span className="font-mono tabular-nums text-accent">
+                −NT$ {tierDiscount.toLocaleString("zh-TW")}
+              </span>
+            </div>
+          )}
+
+          {promoDiscount > 0 && (
+            <div className="flex items-baseline justify-between py-2.5 text-[14px]">
+              <span className="text-fg-2">
+                優惠碼折抵{appliedPromoCode ? ` · ${appliedPromoCode}` : ""}
+              </span>
+              <span className="font-mono tabular-nums text-accent">
+                −NT$ {promoDiscount.toLocaleString("zh-TW")}
+              </span>
+            </div>
+          )}
 
           <div className="mt-4 flex items-baseline justify-between border-t border-border pt-6">
             <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-muted">

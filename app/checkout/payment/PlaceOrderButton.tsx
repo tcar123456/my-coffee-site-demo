@@ -25,9 +25,11 @@ const METHOD_DESCRIPTIONS: Record<PaymentMethod, string> = {
 export function PlaceOrderButton({
   addressId,
   shippingMethod,
+  promoCode,
 }: {
   addressId: string;
   shippingMethod: ShippingMethod;
+  promoCode?: string | null;
 }) {
   const [method, setMethod] = useState<PaymentMethod>("CREDIT_CARD");
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +42,8 @@ export function PlaceOrderButton({
         addressId,
         shippingMethod,
         paymentMethod: method,
+        // 僅在有實際 code 時帶入，避免送空字串觸發 schema 驗證歧義
+        ...(promoCode ? { promoCode } : {}),
       });
       if (!placed.ok) {
         setError(placed.error);

@@ -1,5 +1,6 @@
 // Phase 3b — 配送費計算（純函式 + 死資料）
-// Phase 7c 會把 FREE_SHIPPING_THRESHOLD 改可設定，目前先寫死。
+// Phase 7c 決議：維持單階免運（≥ NT$ 1,200 免運），不引入多階；
+// 把常數仍維持 export 方便未來覆寫，但不引入賣家後台 CRUD（over-engineering for 作品集）。
 
 export const SHIPPING_METHOD_LABELS = {
   CVS_711: "7-11 取貨",

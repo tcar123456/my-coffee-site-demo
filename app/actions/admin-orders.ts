@@ -14,6 +14,7 @@ import {
   isAllowedTransition,
   shouldRestoreStockOnCancel,
 } from "@/lib/order-state";
+import { applyPaidEffects } from "@/lib/order-paid-effects";
 
 const PAGE_SIZE = 20;
 const SHIPPABLE_STATUSES: OrderStatus[] = ["PAID", "SHIPPED", "DELIVERED"];
@@ -150,6 +151,8 @@ export async function updateOrderStatus(
         select: {
           id: true,
           status: true,
+          userId: true,
+          total: true,
           items: { select: { productId: true, qty: true } },
         },
       });
@@ -177,6 +180,15 @@ export async function updateOrderStatus(
             data: { stock: { increment: item.qty } },
           });
         }
+      }
+
+      // Phase 7b — 進到 PAID 時更新 user.lifetimeSpent + 重算 tier
+      // 限定 prevStatus !== PAID 才呼叫（避免 PAID→SHIPPED→DELIVERED 多次累計）
+      if (nextStatus === "PAID" && prevStatus !== "PAID") {
+        await applyPaidEffects(tx, {
+          userId: order.userId,
+          orderTotal: order.total,
+        });
       }
     });
 
@@ -213,7 +225,7 @@ export async function confirmManualPayment(
 
   const order = await prisma.order.findUnique({
     where: { orderNumber },
-    select: { id: true, status: true, paymentMethod: true },
+    select: { id: true, status: true, paymentMethod: true, userId: true, total: true },
   });
   if (!order) return { ok: false, error: "找不到此訂單。" };
   if (order.status !== "PENDING") {
@@ -223,13 +235,20 @@ export async function confirmManualPayment(
     return { ok: false, error: "此付款方式應由金流 callback 自動更新，不可手動確認。" };
   }
 
-  await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      status: "PAID",
-      paidAt: new Date(),
-      paymentTradeNo: `MANUAL-${order.paymentMethod}`,
-    },
+  // Phase 7b — order.status update + lifetimeSpent/tier 重算同 transaction
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+        paymentTradeNo: `MANUAL-${order.paymentMethod}`,
+      },
+    });
+    await applyPaidEffects(tx, {
+      userId: order.userId,
+      orderTotal: order.total,
+    });
   });
   revalidateOrderViews(orderNumber);
   return { ok: true };

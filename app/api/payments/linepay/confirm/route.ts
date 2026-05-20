@@ -13,6 +13,7 @@ import {
   type LinePayConfirmBody,
   type LinePayConfirmResponse,
 } from "@/lib/payments/linepay";
+import { applyPaidEffects } from "@/lib/order-paid-effects";
 
 export const dynamic = "force-dynamic";
 
@@ -109,15 +110,22 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: "PAID",
-        paidAt: new Date(),
-        paymentTradeNo: String(json.info?.transactionId ?? transactionId),
-        paymentFailedAt: null,
-        paymentFailReason: null,
-      },
+    // Phase 7b — order.status update + lifetimeSpent/tier 重算同 transaction
+    await prisma.$transaction(async (tx) => {
+      await tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: "PAID",
+          paidAt: new Date(),
+          paymentTradeNo: String(json.info?.transactionId ?? transactionId),
+          paymentFailedAt: null,
+          paymentFailReason: null,
+        },
+      });
+      await applyPaidEffects(tx, {
+        userId: order.userId,
+        orderTotal: order.total,
+      });
     });
     revalidatePath(`/account/orders/${orderNumber}`);
     revalidatePath("/account/orders");

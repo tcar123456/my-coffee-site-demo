@@ -11,6 +11,7 @@ import {
   verifyCheckMacValue,
   ecpayMerchantTradeNo,
 } from "@/lib/payments/ecpay";
+import { applyPaidEffects } from "@/lib/order-paid-effects";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,13 @@ export async function POST(req: NextRequest) {
   // 安全做法：撈所有可能 candidate（同前綴），確認 strip 後是否 match
   const candidates = await prisma.order.findMany({
     where: { orderNumber: { contains: tradeNo.slice(3, 11) } },
-    select: { id: true, orderNumber: true, total: true, status: true, userId: true },
+    select: {
+      id: true,
+      orderNumber: true,
+      total: true,
+      status: true,
+      userId: true,
+    },
   });
   const order = candidates.find(
     (o) => ecpayMerchantTradeNo(o.orderNumber) === tradeNo,
@@ -95,16 +102,22 @@ export async function POST(req: NextRequest) {
     return plain("1|OK");
   }
 
-  // 7. 成功路徑：PENDING → PAID
-  await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      status: "PAID",
-      paidAt: new Date(),
-      paymentTradeNo: ecpayTradeNo ?? null,
-      paymentFailedAt: null,
-      paymentFailReason: null,
-    },
+  // 7. 成功路徑：PENDING → PAID（Phase 7b 同 transaction 重算 lifetimeSpent + tier）
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id: order.id },
+      data: {
+        status: "PAID",
+        paidAt: new Date(),
+        paymentTradeNo: ecpayTradeNo ?? null,
+        paymentFailedAt: null,
+        paymentFailReason: null,
+      },
+    });
+    await applyPaidEffects(tx, {
+      userId: order.userId,
+      orderTotal: order.total,
+    });
   });
   revalidatePath(`/account/orders/${order.orderNumber}`);
   revalidatePath("/account/orders");

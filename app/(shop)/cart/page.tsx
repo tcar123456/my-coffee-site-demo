@@ -53,11 +53,19 @@ export default async function CartPage() {
 
   let dbItems: Awaited<ReturnType<typeof loadDbItems>> = [];
   let wishlistedIds: string[] = [];
+  let tier: "TIER_01" | "TIER_02" | "TIER_03" = "TIER_01";
   if (user) {
-    [dbItems, wishlistedIds] = await Promise.all([
+    const [items, wishlist, dbUser] = await Promise.all([
       loadDbItems(user.id),
       getWishlistedProductIds(user.id).then((s) => Array.from(s)),
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: { tier: true },
+      }),
     ]);
+    dbItems = items;
+    wishlistedIds = wishlist;
+    tier = dbUser?.tier ?? "TIER_01";
   }
 
   return (
@@ -85,7 +93,11 @@ export default async function CartPage() {
 
       {/* Cart body */}
       {user ? (
-        <UserCartView items={dbItems} wishlistedProductIds={wishlistedIds} />
+        <UserCartView
+          items={dbItems}
+          wishlistedProductIds={wishlistedIds}
+          tier={tier}
+        />
       ) : (
         <GuestCartView />
       )}

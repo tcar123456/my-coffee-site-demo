@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { updateCartItemQty, removeCartItem } from "@/app/actions/cart";
 import { addToWishlist } from "@/app/actions/wishlist";
 import { getGrindLabel, getPkgLabel } from "@/lib/cart-options";
+import { previewTierDiscount, TIER_LABELS } from "@/lib/tier";
+import type { MemberTier } from "@/generated/prisma/enums";
 
 type Item = {
   id: string;
@@ -29,9 +31,11 @@ const SHIPPING_FREE_THRESHOLD = 1200;
 export function UserCartView({
   items,
   wishlistedProductIds,
+  tier,
 }: {
   items: Item[];
   wishlistedProductIds: string[];
+  tier: MemberTier;
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -199,7 +203,7 @@ export function UserCartView({
       </div>
 
       {/* Summary */}
-      <CartSummary subtotal={subtotal} itemCount={itemCount} />
+      <CartSummary subtotal={subtotal} itemCount={itemCount} tier={tier} />
     </section>
   );
 }
@@ -225,11 +229,13 @@ function EmptyCart() {
 function CartSummary({
   subtotal,
   itemCount,
+  tier,
 }: {
   subtotal: number;
   itemCount: number;
+  tier: MemberTier;
 }) {
-  const memberDiscount = 0; // 視覺保留，Phase 7 才接會員折抵
+  const memberDiscount = previewTierDiscount(tier, subtotal);
   const shippingFree = subtotal >= SHIPPING_FREE_THRESHOLD;
   const total = Math.max(0, subtotal - memberDiscount);
 
@@ -254,6 +260,16 @@ function CartSummary({
           )
         }
       />
+      {memberDiscount > 0 && (
+        <SumRow
+          label={`會員折抵 · ${TIER_LABELS[tier]}`}
+          value={
+            <span className="text-accent">
+              −NT$ {memberDiscount.toLocaleString("zh-TW")}
+            </span>
+          }
+        />
+      )}
 
       <div className="mt-4 flex items-baseline justify-between border-t border-border pt-6">
         <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-muted">

@@ -1,8 +1,13 @@
 "use server";
 
 // Phase 3b — 結帳 server actions
-// placeOrder：transaction 內檢查 + 扣庫存 + 建單 + 清 cart + 取訂單編號。
-// markOrderPaid：dev-only mock 付款，PENDING → PAID。
+// Phase 7a/b — placeOrder 接 promo + 自動套用 tier discount，transaction 內：
+//   1) 重驗 promoCode（active + 時間 + minSubtotal + maxUses + 未被同帳號用過）
+//   2) 扣庫存
+//   3) 算 subtotal / shippingFee / discountAmount / tierDiscountAmount / total
+//   4) 建 Order + OrderItem + PromoCodeUsage（若有 promo）
+//   5) PromoCode.usedCount 遞增（同 transaction 防 race）
+//   6) 清空 Cart + 取訂單編號
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -15,11 +20,14 @@ import {
   isPaymentMethod,
   isShippingMethod,
 } from "@/lib/shipping";
+import { previewDiscount } from "@/lib/schemas/promo-code";
+import { previewTierDiscount } from "@/lib/tier";
 
 const placeOrderSchema = z.object({
   addressId: z.string().min(1),
   shippingMethod: z.string().refine(isShippingMethod, "無效的配送方式"),
   paymentMethod: z.string().refine(isPaymentMethod, "無效的付款方式"),
+  promoCode: z.string().trim().toUpperCase().optional(),
 });
 
 export type PlaceOrderResult =
@@ -36,13 +44,14 @@ export async function placeOrder(input: {
   addressId: string;
   shippingMethod: string;
   paymentMethod: string;
+  promoCode?: string;
 }): Promise<PlaceOrderResult> {
   const userId = await requireUserId();
   const parsed = placeOrderSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: "參數錯誤。" };
   }
-  const { addressId, shippingMethod, paymentMethod } = parsed.data;
+  const { addressId, shippingMethod, paymentMethod, promoCode } = parsed.data;
 
   const address = await prisma.address.findUnique({
     where: { id: addressId },
@@ -96,13 +105,42 @@ export async function placeOrder(input: {
     }
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { tier: true },
+  });
+  if (!user) return { ok: false, error: "找不到使用者。" };
+
   const subtotal = cart.items.reduce((sum, i) => sum + i.product.price * i.qty, 0);
   const shippingFee = calculateShipping(subtotal, shippingMethod);
-  const total = subtotal + shippingFee;
+  const tierDiscountAmount = previewTierDiscount(user.tier, subtotal);
 
   try {
     const orderNumber = await prisma.$transaction(async (tx) => {
-      // 庫存扣減 race 防護：update + where stock>=qty。任一失敗就 throw 回滾。
+      // 1) 重驗 promo（transaction 內撈最新狀態，配合 usedCount 增量防 race）
+      let promoCodeId: string | null = null;
+      let discountAmount = 0;
+      if (promoCode) {
+        const promo = await tx.promoCode.findUnique({
+          where: { code: promoCode },
+        });
+        if (!promo) throw new Error("PROMO_NOT_FOUND");
+
+        const usage = await tx.promoCodeUsage.findUnique({
+          where: {
+            userId_promoCodeId: { userId, promoCodeId: promo.id },
+          },
+        });
+        if (usage) throw new Error("PROMO_ALREADY_USED");
+
+        const preview = previewDiscount(subtotal, promo);
+        if (!preview.ok) throw new Error(`PROMO_INVALID:${preview.reason}`);
+
+        promoCodeId = promo.id;
+        discountAmount = preview.discount;
+      }
+
+      // 2) 庫存扣減 race 防護：update + where stock>=qty。任一失敗就 throw 回滾。
       for (const item of cart.items) {
         const result = await tx.product.updateMany({
           where: { id: item.productId, stock: { gte: item.qty } },
@@ -113,9 +151,16 @@ export async function placeOrder(input: {
         }
       }
 
+      // 3) 算最終 total：扣 promo + tier 折抵後仍 ≥ 0
+      // 順序：先 promo 再 tier（避免 tier 折抵被 promo 重複壓掉）；
+      // 兩者皆對 subtotal 折抵（不對 shippingFee）。
+      const totalDiscount = discountAmount + tierDiscountAmount;
+      const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
+      const total = discountedSubtotal + shippingFee;
+
       const number = await generateOrderNumber(tx);
 
-      await tx.order.create({
+      const createdOrder = await tx.order.create({
         data: {
           orderNumber: number,
           userId,
@@ -124,6 +169,9 @@ export async function placeOrder(input: {
           paymentMethod,
           subtotal,
           shippingFee,
+          promoCodeId,
+          discountAmount,
+          tierDiscountAmount,
           total,
           recipientName: address.recipient,
           recipientPhone: address.phone,
@@ -145,6 +193,21 @@ export async function placeOrder(input: {
         },
       });
 
+      // 4) 寫 PromoCodeUsage + 遞增 usedCount（同 transaction 防 race）
+      if (promoCodeId) {
+        await tx.promoCodeUsage.create({
+          data: {
+            userId,
+            promoCodeId,
+            orderId: createdOrder.id,
+          },
+        });
+        await tx.promoCode.update({
+          where: { id: promoCodeId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+
       await tx.cartItem.deleteMany({ where: { cartId: cart.id } });
 
       return number;
@@ -163,6 +226,15 @@ export async function placeOrder(input: {
         error: `「${message.slice("STOCK_RACE:".length)}」剛剛被搶完了，請重新調整購物車。`,
       };
     }
+    if (message === "PROMO_NOT_FOUND") {
+      return { ok: false, error: "優惠碼不存在或已失效，請重新確認。" };
+    }
+    if (message === "PROMO_ALREADY_USED") {
+      return { ok: false, error: "此優惠碼您已使用過。" };
+    }
+    if (message.startsWith("PROMO_INVALID:")) {
+      return { ok: false, error: message.slice("PROMO_INVALID:".length) };
+    }
     return { ok: false, error: "建立訂單時發生錯誤，請稍後再試。" };
   }
 }
@@ -171,6 +243,7 @@ export async function placeOrderAndRedirect(input: {
   addressId: string;
   shippingMethod: string;
   paymentMethod: string;
+  promoCode?: string;
 }): Promise<{ ok: false; error: string } | never> {
   const result = await placeOrder(input);
   if (!result.ok) return result;

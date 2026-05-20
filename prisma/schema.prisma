@@ -3,6 +3,10 @@
 // Phase 3a: Cart / CartItem
 // Phase 3b: Address / Order / OrderItem / OrderCounter
 // Phase 4:  WishlistItem / Subscription（會員中心模組）
+// Phase 5c: PromoCode / DiscountType
+// Phase 6:  Order 付款追蹤 4 欄
+// Phase 7:  PromoCodeUsage + Order.promoCodeId/discountAmount/tierDiscountAmount
+//           + User.tier/lifetimeSpent + MemberTier enum
 
 generator client {
   provider = "prisma-client"
@@ -24,16 +28,30 @@ model User {
   image         String?
   password      String?
   role          Role      @default(CUSTOMER)
+  // Phase 7b — 會員等級 + 累計消費
+  // lifetimeSpent：所有 PAID/SHIPPED/DELIVERED 訂單 total 累計（升等門檻依據）
+  // tier：升等規則見 lib/tier.ts，由 lib/order-paid-effects.ts 在訂單 PAID 時重算
+  tier          MemberTier @default(TIER_01)
+  lifetimeSpent Int        @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  cart          Cart?
-  addresses     Address[]
-  orders        Order[]
-  wishlistItems WishlistItem[]
-  subscriptions Subscription[]
+  accounts        Account[]
+  sessions        Session[]
+  cart            Cart?
+  addresses       Address[]
+  orders          Order[]
+  wishlistItems   WishlistItem[]
+  subscriptions   Subscription[]
+  promoCodeUsages PromoCodeUsage[]
+}
+
+// Phase 7b — 會員等級
+// TIER_01：預設；TIER_02：lifetimeSpent ≥ 5,000；TIER_03：lifetimeSpent ≥ 15,000
+enum MemberTier {
+  TIER_01
+  TIER_02
+  TIER_03
 }
 
 enum Role {
@@ -188,6 +206,12 @@ model Order {
 
   subtotal    Int
   shippingFee Int
+  // Phase 7a — 優惠碼折抵（snapshot：訂單建立時凍結，後續 promo 改規則不影響歷史單）
+  // promoCodeId nullable：未使用優惠碼為 null；discountAmount 預設 0
+  promoCodeId    String?
+  discountAmount Int     @default(0)
+  // Phase 7b — 會員等級折抵（snapshot）
+  tierDiscountAmount Int @default(0)
   total       Int
 
   recipientName    String
@@ -214,13 +238,15 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user    User        @relation(fields: [userId], references: [id], onDelete: Restrict)
-  address Address     @relation(fields: [addressId], references: [id], onDelete: Restrict)
-  items   OrderItem[]
+  user      User        @relation(fields: [userId], references: [id], onDelete: Restrict)
+  address   Address     @relation(fields: [addressId], references: [id], onDelete: Restrict)
+  items     OrderItem[]
+  promoCode PromoCode?  @relation(fields: [promoCodeId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([promoCodeId])
 }
 
 model OrderItem {
@@ -344,10 +370,31 @@ model PromoCode {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
+  orders Order[]
+  usages PromoCodeUsage[]
+
   @@index([isActive])
 }
 
 enum DiscountType {
   PERCENT
   FIXED
+}
+
+// Phase 7a — 優惠碼使用紀錄
+// 同 userId × promoCodeId 唯一，防同帳號重複使用同碼。
+// onDelete Cascade：promoCode 被硬刪時連同 usage 一起刪；
+// （admin 不開硬刪，僅 toggleActive，所以實務上 cascade 不會觸發 — 純保險）
+model PromoCodeUsage {
+  id          String   @id @default(cuid())
+  userId      String
+  promoCodeId String
+  orderId     String?
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  promoCode PromoCode @relation(fields: [promoCodeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, promoCodeId])
+  @@index([promoCodeId])
 }
