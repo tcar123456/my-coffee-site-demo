@@ -3,6 +3,7 @@
 // 結構參考 /admin/orders（filter chips + search form + table + pagination）；
 // row 操作（toggle/delete）拆到 client 子檔 ProductRowActions。
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   listProductsForAdmin,
@@ -264,13 +265,12 @@ function ProductRow({
       {/* 縮圖 */}
       <td className={`px-6 py-3 ${cellBorder}`}>
         {product.primaryImageUrl ? (
-          // 用 plain <img>（避免 next/image 的 remotePatterns 設定）
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={product.primaryImageUrl}
             alt={product.name}
             width={48}
             height={48}
+            sizes="48px"
             className="size-12 border border-border object-cover"
           />
         ) : (

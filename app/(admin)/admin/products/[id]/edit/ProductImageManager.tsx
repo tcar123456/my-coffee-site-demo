@@ -6,6 +6,7 @@
 // reorder：呼叫 reorderProductImagesAction(imageIds order)，optimistic 預先 swap 本地 state，失敗就 revert。
 
 import { useState, useTransition, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   uploadProductImageAction,
@@ -158,10 +159,12 @@ export function ProductImageManager({
                 key={img.id}
                 className="flex gap-4 border border-border bg-bg p-4"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={img.url}
                   alt={img.alt ?? ""}
+                  width={120}
+                  height={120}
+                  sizes="120px"
                   className="size-[120px] flex-shrink-0 border border-border object-cover"
                 />
                 <div className="flex flex-1 flex-col gap-2">
@@ -256,6 +259,7 @@ export function ProductImageManager({
           <ul className="mt-4 grid grid-cols-4 gap-3 max-[800px]:grid-cols-3 max-[500px]:grid-cols-2">
             {pendingFiles.map((file, i) => (
               <li key={`${file.name}-${i}`} className="flex flex-col gap-1.5">
+                {/* blob URL 預覽：next/image 不支援 createObjectURL，保留 plain img */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={URL.createObjectURL(file)}

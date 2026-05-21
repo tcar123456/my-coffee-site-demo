@@ -3,6 +3,7 @@
 // inline 「調整庫存」表單拆成 client 子檔 StockAdjustForm（useTransition + server action）。
 // 庫存徽章三段：售完 / 庫存低（<20） / 庫存充足（>=20）。
 
+import Image from "next/image";
 import Link from "next/link";
 import { listProductsForStock } from "@/app/actions/admin-stock";
 import { StockAdjustForm } from "./StockAdjustForm";
@@ -147,12 +148,12 @@ export default async function AdminStockPage({
                     aria-hidden={!p.images[0]}
                   >
                     {p.images[0] && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={p.images[0].url}
                         alt={p.images[0].alt ?? p.name}
-                        loading="lazy"
-                        className="absolute inset-0 size-full object-cover"
+                        fill
+                        sizes="88px"
+                        className="object-cover"
                       />
                     )}
                   </div>

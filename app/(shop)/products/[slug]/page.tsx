@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -98,11 +99,13 @@ export default async function ProductDetailPage({
             className={`${product.images[0] ? "bg-surface" : `bean-cover ${product.coverVariant ? `bean-cover--alt-${product.coverVariant}` : ""}`} relative aspect-[4/5] overflow-hidden border border-border`}
           >
             {product.images[0] && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={product.images[0].url}
                 alt={product.images[0].alt ?? product.name}
-                className="absolute inset-0 size-full object-cover"
+                fill
+                priority
+                sizes="(min-width:900px) 50vw, 100vw"
+                className="object-cover"
               />
             )}
             <span className="absolute top-5 left-5 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
@@ -125,14 +128,18 @@ export default async function ProductDetailPage({
           {product.images.length > 1 && (
             <div className="mt-3 grid grid-cols-4 gap-2">
               {product.images.slice(0, 8).map((img) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <div
                   key={img.id}
-                  src={img.url}
-                  alt={img.alt ?? product.name}
-                  className="aspect-square border border-border bg-surface object-cover"
-                  loading="lazy"
-                />
+                  className="relative aspect-square border border-border bg-surface"
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.alt ?? product.name}
+                    fill
+                    sizes="120px"
+                    className="object-cover"
+                  />
+                </div>
               ))}
             </div>
           )}

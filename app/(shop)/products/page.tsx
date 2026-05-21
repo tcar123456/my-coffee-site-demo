@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "../../../generated/prisma/client";
@@ -236,12 +237,12 @@ export default async function ProductsPage({
                       className={`${p.images[0] ? "bg-surface" : `bean-cover ${p.coverVariant ? `bean-cover--alt-${p.coverVariant}` : ""}`} relative aspect-[4/5] overflow-hidden`}
                     >
                       {p.images[0] && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={p.images[0].url}
                           alt={p.images[0].alt ?? p.name}
-                          loading="lazy"
-                          className="absolute inset-0 size-full object-cover"
+                          fill
+                          sizes="(min-width:768px) 33vw, 50vw"
+                          className="object-cover"
                         />
                       )}
                       <span className="absolute top-4 left-4 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
