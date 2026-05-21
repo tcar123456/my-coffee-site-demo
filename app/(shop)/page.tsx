@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 const featuredBeans = [
@@ -9,6 +10,10 @@ const featuredBeans = [
     notes: "蕁麻草、佛手柑、白桃 — 喉韻像剛開封的紅茶。",
     price: 580,
     weight: "200g · 全豆/中粗研磨",
+    image: {
+      url: "https://images.unsplash.com/photo-1597974909271-513c5d42290c?w=900&q=80",
+      alt: "耶加雪菲 淺焙咖啡豆",
+    },
   },
   {
     no: "02",
@@ -18,6 +23,10 @@ const featuredBeans = [
     notes: "蘭姆酒、葡萄乾、黑可可 — 收尾帶一絲威士忌的甜。",
     price: 720,
     weight: "200g · 全豆/中粗研磨",
+    image: {
+      url: "https://images.unsplash.com/photo-1597816792530-f6d57bd2bf9e?w=900&q=80",
+      alt: "成熟的紅色咖啡櫻桃 — 哥倫比亞 Las Flores",
+    },
   },
   {
     no: "03",
@@ -27,6 +36,10 @@ const featuredBeans = [
     notes: "茉莉、蜂蜜、白色花卉 — 是一杯像會香水般綻放的咖啡。",
     price: 1680,
     weight: "100g · 全豆 · 數量稀少",
+    image: {
+      url: "https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=900&q=80",
+      alt: "翡翠藝伎 精品淺焙咖啡豆",
+    },
   },
 ];
 
@@ -38,6 +51,10 @@ const dispatches = [
     title: "為什麼我們堅持每週一才烘豆 — 而不是「現點現烘」",
     deck: "一支咖啡豆從烘焙完成到風味最穩定，需要 7 至 10 天的「養豆期」。把這個過程透明化，是我們對熟客的承諾。",
     byline: "文 / 主理人 林子翔 — Roastmaster",
+    image: {
+      url: "https://images.unsplash.com/photo-1736592506186-6bc73c7d1424?w=1200&q=80",
+      alt: "圍裙烘豆師舀取烘焙完成的咖啡豆",
+    },
   },
   {
     lead: false,
@@ -46,6 +63,10 @@ const dispatches = [
     title: "翡翠莊園藝伎到貨：今年最香的一批",
     deck: "連續 14 屆 BoP 冠軍的莊園，今年我們只拿到 12 公斤紅標。先到先得。",
     byline: "文 / Ada Yu",
+    image: {
+      url: "https://images.unsplash.com/photo-1561742727-74fee4d4de60?w=1000&q=80",
+      alt: "翡翠莊園 藝伎咖啡豆批次篩選",
+    },
   },
   {
     lead: false,
@@ -54,6 +75,10 @@ const dispatches = [
     title: "淺焙手沖：給新手的三個關鍵刻度",
     deck: "水溫、研磨度、注水節奏 — 把這三件事做對，普通豆也能喝出酸甜平衡。",
     byline: "文 / 林子翔",
+    image: {
+      url: "https://images.unsplash.com/photo-1595827295672-97a059484442?w=1000&q=80",
+      alt: "鵝頸壺手沖 V60 滴濾咖啡",
+    },
   },
 ];
 
@@ -144,6 +169,15 @@ export default function HomePage() {
           </div>
 
           <div className="hero-art relative aspect-[4/5] overflow-hidden border border-border max-[860px]:aspect-[3/4] max-[860px]:max-h-[60vh]">
+            <Image
+              src="https://images.unsplash.com/photo-1707303644088-e4dd2be82d2a?w=1400&q=80"
+              alt="暮焙烘焙坊內景 — 紅磚牆與烘豆機"
+              fill
+              priority
+              sizes="(max-width: 860px) 100vw, 50vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,oklch(8%_0.01_50_/_0.7)_100%)]" />
             <div className="absolute bottom-6 left-6 z-10 font-mono text-[10px] leading-[1.6] tracking-[0.22em] uppercase text-[oklch(95%_0.01_60_/_0.7)]">
               <strong className="block font-normal text-accent">本月精選</strong>
               哥倫比亞 拉斯佛羅雷斯
@@ -170,6 +204,14 @@ export default function HomePage() {
                 className="group flex flex-col border border-border bg-surface transition-all duration-300 hover:-translate-y-[3px] hover:border-border-hi"
               >
                 <div className="bean-cover relative aspect-[4/5] overflow-hidden">
+                  <Image
+                    src={bean.image.url}
+                    alt={bean.image.alt}
+                    fill
+                    sizes="(max-width: 580px) 100vw, (max-width: 900px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,oklch(8%_0.01_50_/_0.35)_0%,transparent_30%,transparent_70%,oklch(8%_0.01_50_/_0.45)_100%)]" />
                   <span className="absolute top-4 left-4 z-10 font-mono text-[10px] tracking-[0.22em] text-fg-2">
                     N° {bean.no}
                   </span>
@@ -228,9 +270,18 @@ export default function HomePage() {
             {dispatches.map((d) => (
               <article key={d.label} className="flex flex-col gap-4">
                 <div
-                  className={`img-block relative border border-border ${d.lead ? "aspect-[4/5]" : "aspect-[16/10]"}`}
+                  className={`img-block relative overflow-hidden border border-border ${d.lead ? "aspect-[4/5]" : "aspect-[16/10]"}`}
                   data-label={d.label}
-                />
+                >
+                  <Image
+                    src={d.image.url}
+                    alt={d.image.alt}
+                    fill
+                    sizes={d.lead ? "(max-width: 900px) 100vw, 40vw" : "(max-width: 900px) 100vw, 25vw"}
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,oklch(8%_0.01_50_/_0.75)_100%)]" />
+                </div>
                 <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-accent">
                   {d.date}
                 </span>

@@ -14,12 +14,18 @@ const nextConfig: NextConfig = {
   ],
   // Phase 10 — Supabase Storage 公開 bucket 的圖片需透過 next/image 載入。
   // public URL 格式：https://<project-ref>.supabase.co/storage/v1/object/public/product-images/<path>
+  // Unsplash CDN 作為作品集 placeholder 圖庫（hero / editorial blocks / seed product cover）。
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
     ],
   },

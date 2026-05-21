@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
@@ -9,17 +10,6 @@ export const metadata: Metadata = {
 };
 
 type Meta = { label: string; value: string; strong?: string };
-type Chapter = {
-  num: string;
-  title: string;
-  body: React.ReactNode;
-};
-type Related = {
-  category: string;
-  title: string;
-  excerpt: string;
-  date: string;
-};
 
 const meta: Meta[] = [
   { label: "作者", value: "主理人 · 烘豆師", strong: "林子翔" },
@@ -51,24 +41,44 @@ const promises: { title: string; body: string }[] = [
   },
 ];
 
+type Related = {
+  category: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  image: { url: string; alt: string };
+};
+
 const related: Related[] = [
   {
     category: "烘焙日誌 / No. 218",
     title: "為什麼我們堅持深焙不超過 220°C",
     excerpt: "「焦糖化的甜，跟焦炭的苦，只差兩度。」一篇關於溫度曲線的長文。",
     date: "2026.04.22",
+    image: {
+      url: "https://images.unsplash.com/photo-1623659228341-21bc94462e9f?w=1000&q=80",
+      alt: "木製碗裝深焙咖啡豆與量勺",
+    },
   },
   {
     category: "產地手記 / Colombia",
     title: "Las Flores — 哥倫比亞高山上的厭氧實驗室",
     excerpt: "與 Sebastián Ramírez 並肩工作的兩週，學會了什麼叫做「對風味的偏執」。",
     date: "2026.03.14",
+    image: {
+      url: "https://images.unsplash.com/photo-1764620967387-7412a794202d?w=1000&q=80",
+      alt: "枝頭上正在熟成的咖啡櫻桃",
+    },
   },
   {
     category: "器具 / Brewing",
     title: "在家沖出職人級耶加雪菲的五個關鍵",
     excerpt: "水溫、研磨度、注水節奏、粉水比、靜置時間 — 全部攤開來說。",
     date: "2026.02.28",
+    image: {
+      url: "https://images.unsplash.com/photo-1565845103399-89ff0425d093?w=1000&q=80",
+      alt: "手沖咖啡與鵝頸壺",
+    },
   },
 ];
 
@@ -127,6 +137,15 @@ export default function BrandPage() {
         {/* Hero image */}
         <figure>
           <div className="hero-art relative my-[clamp(40px,5vw,64px)] mb-4 aspect-[16/9] overflow-hidden border border-border">
+            <Image
+              src="https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=1600&q=80"
+              alt="主理人將生豆倒入 Probat 烘豆機 — 民權路烘焙坊現場"
+              fill
+              priority
+              sizes="(max-width: 900px) 100vw, 70vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,oklch(8%_0.01_50_/_0.75)_100%)]" />
             <div className="absolute bottom-7 left-7 z-10 font-mono text-[10px] leading-[1.6] tracking-[0.22em] uppercase text-[oklch(95%_0.01_60_/_0.7)]">
               <strong className="mb-1 block font-normal text-accent">
                 WORK FLOOR
@@ -193,7 +212,15 @@ export default function BrandPage() {
 
         {/* Figure */}
         <figure className="my-[clamp(40px,5vw,56px)]">
-          <div className="img-block relative aspect-[3/2] border border-border" />
+          <div className="img-block relative aspect-[3/2] overflow-hidden border border-border">
+            <Image
+              src="https://images.unsplash.com/photo-1762277142860-fdc8c4cfbdd9?w=1400&q=80"
+              alt="哥倫比亞 Las Flores 莊園 — 雙手摘採成熟的紅色咖啡櫻桃"
+              fill
+              sizes="(max-width: 900px) 100vw, 720px"
+              className="object-cover"
+            />
+          </div>
           <figcaption className="mt-3 font-mono text-[11px] leading-[1.5] tracking-[0.06em] text-muted">
             <span className="mr-2 text-accent">圖 02</span>
             哥倫比亞 Las Flores 莊園 — Sebastián Ramírez 與他的厭氧發酵桶，2024 年 3 月由林子翔拍攝。
@@ -305,7 +332,15 @@ export default function BrandPage() {
               key={r.title}
               className="group flex flex-col gap-3.5 transition-transform duration-200 hover:-translate-y-[3px]"
             >
-              <div className="img-block relative aspect-[4/3] border border-border" />
+              <div className="img-block relative aspect-[4/3] overflow-hidden border border-border">
+                <Image
+                  src={r.image.url}
+                  alt={r.image.alt}
+                  fill
+                  sizes="(max-width: 900px) 100vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
               <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-accent">
                 {r.category}
               </span>

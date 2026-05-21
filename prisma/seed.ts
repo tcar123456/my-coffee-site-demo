@@ -32,6 +32,9 @@ const demoUsers = [
   },
 ];
 
+// Phase 10b — seed product cover 改接 Unsplash hotlink（作品集 placeholder）。
+// imageUrl + imageAlt 不會寫進 Product table（schema 沒這兩欄），會在 main() 內
+// 額外 upsert 成一筆 ProductImage(sortOrder=0)，idempotent 用 url 比對。
 const products = [
   {
     slug: "ethiopia-yirgacheffe-g1-kochere",
@@ -45,6 +48,9 @@ const products = [
     stock: 30,
     badge: "主理人推薦",
     coverVariant: null,
+    imageUrl:
+      "https://images.unsplash.com/photo-1597974909271-513c5d42290c?w=1200&q=80",
+    imageAlt: "耶加雪菲 淺焙咖啡豆 — 衣索比亞",
   },
   {
     slug: "colombia-las-flores-anaerobic-72",
@@ -58,6 +64,9 @@ const products = [
     stock: 30,
     badge: null,
     coverVariant: 3,
+    imageUrl:
+      "https://images.unsplash.com/photo-1597816792530-f6d57bd2bf9e?w=1200&q=80",
+    imageAlt: "成熟的紅色咖啡櫻桃 — 哥倫比亞 Las Flores 厭氧發酵",
   },
   {
     slug: "panama-hacienda-esmeralda-geisha-red",
@@ -71,6 +80,9 @@ const products = [
     stock: 12,
     badge: "數量稀少",
     coverVariant: 1,
+    imageUrl:
+      "https://images.unsplash.com/photo-1442550528053-c431ecb55509?w=1200&q=80",
+    imageAlt: "翡翠莊園 藝伎 紅標 — 精品淺焙咖啡豆",
   },
   {
     slug: "kenya-nyeri-karirou-aa",
@@ -84,6 +96,9 @@ const products = [
     stock: 30,
     badge: null,
     coverVariant: 2,
+    imageUrl:
+      "https://images.unsplash.com/photo-1772228616071-aa344913b93e?w=1200&q=80",
+    imageAlt: "肯亞 Nyeri 莊園採收 — 一籃成熟咖啡櫻桃",
   },
   {
     slug: "guatemala-antigua-santa-catarina",
@@ -97,6 +112,9 @@ const products = [
     stock: 30,
     badge: null,
     coverVariant: null,
+    imageUrl:
+      "https://images.unsplash.com/photo-1554202572-58b92efb2be1?w=1200&q=80",
+    imageAlt: "瓜地馬拉 Antigua 中深焙咖啡豆",
   },
   {
     slug: "yemen-mocha-haraz",
@@ -110,6 +128,9 @@ const products = [
     stock: 18,
     badge: "職人選",
     coverVariant: 4,
+    imageUrl:
+      "https://images.unsplash.com/photo-1743697566744-3b21076cc4cc?w=1200&q=80",
+    imageAlt: "葉門 摩卡 哈拉茲 — 麻布袋日曬咖啡豆",
   },
   {
     slug: "indonesia-sulawesi-toraja",
@@ -123,6 +144,9 @@ const products = [
     stock: 30,
     badge: null,
     coverVariant: 5,
+    imageUrl:
+      "https://images.unsplash.com/photo-1672570050756-4f1953bde478?w=1200&q=80",
+    imageAlt: "印尼 蘇拉維西 托拉雅 深焙咖啡豆",
   },
   {
     slug: "costa-rica-tarrazu-la-minita",
@@ -136,18 +160,40 @@ const products = [
     stock: 0,
     badge: null,
     coverVariant: 3,
+    imageUrl:
+      "https://images.unsplash.com/photo-1649780563985-ff945be65785?w=1200&q=80",
+    imageAlt: "哥斯大黎加 塔拉珠 蜜處理咖啡豆",
   },
 ];
 
 async function main() {
   console.log("Seeding products...");
   for (const p of products) {
-    await prisma.product.upsert({
+    const { imageUrl, imageAlt, ...productData } = p;
+    const product = await prisma.product.upsert({
       where: { slug: p.slug },
-      update: p,
-      create: p,
+      update: productData,
+      create: productData,
+      select: { id: true, slug: true },
     });
-    console.log(`  ✓ ${p.slug}`);
+
+    // ProductImage idempotent — 用 url 比對，避免覆蓋 admin 後台真實上傳的圖。
+    const existingCover = await prisma.productImage.findFirst({
+      where: { productId: product.id, url: imageUrl },
+      select: { id: true },
+    });
+    if (!existingCover) {
+      await prisma.productImage.create({
+        data: {
+          productId: product.id,
+          url: imageUrl,
+          alt: imageAlt,
+          sortOrder: 0,
+        },
+      });
+    }
+
+    console.log(`  ✓ ${p.slug}${existingCover ? "" : " (+cover)"}`);
   }
   console.log(`Done. ${products.length} products seeded.`);
 
