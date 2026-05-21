@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -56,6 +57,7 @@ export default async function WishlistPage() {
                 : "";
               const numLabel = (idx + 1).toString().padStart(2, "0");
               const originLabel = item.product.origin.split(" · ")[0];
+              const cover = item.product.images[0];
               return (
                 <div
                   key={item.id}
@@ -63,9 +65,19 @@ export default async function WishlistPage() {
                 >
                   <Link
                     href={`/products/${item.product.slug}`}
-                    className={`bean-cover ${variantClass} relative aspect-square overflow-hidden border border-border max-[700px]:row-span-2`}
-                    aria-hidden="true"
-                  />
+                    className={`${cover ? "bg-surface" : `bean-cover ${variantClass}`} relative aspect-square overflow-hidden border border-border max-[700px]:row-span-2`}
+                    aria-label={item.product.name}
+                  >
+                    {cover && (
+                      <Image
+                        src={cover.url}
+                        alt={cover.alt ?? item.product.name}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
+                      />
+                    )}
+                  </Link>
                   <div className="max-[700px]:col-start-2">
                     <div className="font-mono text-[10px] tracking-[0.14em] uppercase text-muted">
                       N° {numLabel} · {originLabel}

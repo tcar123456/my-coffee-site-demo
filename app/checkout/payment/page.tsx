@@ -2,6 +2,7 @@
 // 顯示完整訂單預覽 + 付款方式選擇；確認下單由 PlaceOrderButton 處理。
 
 import { redirect } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -87,6 +88,11 @@ export default async function CheckoutPaymentPage({
               origin: true,
               price: true,
               coverVariant: true,
+              images: {
+                orderBy: { sortOrder: "asc" },
+                take: 1,
+                select: { url: true, alt: true },
+              },
             },
           },
         },
@@ -217,14 +223,25 @@ export default async function CheckoutPaymentPage({
                   ? `bean-cover--alt-${line.product.coverVariant}`
                   : "";
                 const lineTotal = line.product.price * line.qty;
+                const cover = line.product.images[0];
                 return (
                   <div
                     key={line.id}
                     className="grid grid-cols-[64px_1fr_auto] items-center gap-5 border-b border-border py-5 last:border-b-0"
                   >
                     <div
-                      className={`bean-cover ${variantClass} aspect-[4/5] border border-border`}
-                    />
+                      className={`${cover ? "bg-surface" : `bean-cover ${variantClass}`} relative aspect-[4/5] overflow-hidden border border-border`}
+                    >
+                      {cover && (
+                        <Image
+                          src={cover.url}
+                          alt={cover.alt ?? line.product.name}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                        />
+                      )}
+                    </div>
                     <div>
                       <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-muted">
                         {line.product.origin}

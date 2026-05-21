@@ -190,6 +190,11 @@ async function loadDbItems(userId: string) {
               weightGram: true,
               stock: true,
               coverVariant: true,
+              images: {
+                orderBy: { sortOrder: "asc" },
+                take: 1,
+                select: { url: true, alt: true },
+              },
             },
           },
         },

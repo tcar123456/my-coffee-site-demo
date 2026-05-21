@@ -228,6 +228,11 @@ export async function getProductsByIds(ids: string[]) {
       stock: true,
       isActive: true,
       coverVariant: true,
+      images: {
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        select: { url: true, alt: true },
+      },
     },
   });
 }

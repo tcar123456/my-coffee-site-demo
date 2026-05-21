@@ -32,7 +32,17 @@ export async function listWishlist() {
   const userId = await requireUserId();
   return prisma.wishlistItem.findMany({
     where: { userId },
-    include: { product: true },
+    include: {
+      product: {
+        include: {
+          images: {
+            orderBy: { sortOrder: "asc" },
+            take: 1,
+            select: { url: true, alt: true },
+          },
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 }

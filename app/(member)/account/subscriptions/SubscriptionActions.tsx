@@ -6,6 +6,7 @@ import {
   pauseSubscription,
   resumeSubscription,
   cancelSubscription,
+  reactivateSubscription,
 } from "@/app/actions/subscription";
 import type { SubscriptionStatus } from "@/generated/prisma/enums";
 
@@ -35,9 +36,21 @@ export function SubscriptionActions({
 
   if (status === "CANCELLED") {
     return (
-      <span className="font-mono text-[11px] tracking-[0.14em] uppercase text-muted">
-        此方案已取消
-      </span>
+      <div className="flex flex-col items-end gap-2 max-[720px]:items-start">
+        <button
+          type="button"
+          onClick={() =>
+            run(reactivateSubscription, "確定要重新啟用這個訂閱方案嗎？")
+          }
+          disabled={isPending}
+          className="inline-flex items-center gap-2 border border-accent bg-accent px-4 py-2.5 font-mono text-[11px] font-semibold tracking-[0.16em] uppercase text-bg transition-colors hover:border-accent-hi hover:bg-accent-hi disabled:opacity-50"
+        >
+          重新訂閱
+        </button>
+        {error && (
+          <span className="font-mono text-[11px] text-danger">{error}</span>
+        )}
+      </div>
     );
   }
 
@@ -69,7 +82,7 @@ export function SubscriptionActions({
           onClick={() =>
             run(
               cancelSubscription,
-              "取消後無法恢復，確定要取消這個訂閱方案嗎？",
+              "取消後可在歷史紀錄中重新訂閱，確定要取消這個訂閱方案嗎？",
             )
           }
           disabled={isPending}

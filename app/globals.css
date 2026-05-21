@@ -91,6 +91,13 @@ h1, h2, h3, h4 {
   letter-spacing: -0.01em;
 }
 
+/* 大標題行距 +5px — h1/h2 多行時呼吸感更佳。
+   !important 用來蓋過 Tailwind `leading-*` utility 的 0,1,0 specificity；
+   calc(1em + 5px) 對 leading-none (=1em) 來說剛好多 5px，較大字級也維持絕對 5px 的線間距增量。 */
+h1, h2 {
+  line-height: calc(1em + 5px) !important;
+}
+
 ::selection { background: var(--accent-tint); color: var(--fg); }
 
 /* =============================================================

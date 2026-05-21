@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { useCartStore } from "@/lib/cart-store";
@@ -16,6 +17,7 @@ type Product = {
   stock: number;
   isActive: boolean;
   coverVariant: number | null;
+  images: { url: string; alt: string | null }[];
 };
 
 const SHIPPING_FREE_THRESHOLD = 1200;
@@ -104,6 +106,7 @@ export function GuestCartView() {
               ? `bean-cover--alt-${line.product.coverVariant}`
               : "";
             const exceedsStock = line.qty > line.product.stock;
+            const cover = line.product.images[0];
             const key = `${line.productId}|${line.grind ?? ""}|${line.pkg ?? ""}`;
             return (
               <article
@@ -111,8 +114,18 @@ export function GuestCartView() {
                 className="grid grid-cols-[110px_1fr_auto] items-start gap-6 border-b border-border py-7 max-[600px]:grid-cols-[80px_1fr]"
               >
                 <div
-                  className={`bean-cover ${variantClass} aspect-[4/5] border border-border max-[600px]:aspect-square`}
-                />
+                  className={`${cover ? "bg-surface" : `bean-cover ${variantClass}`} relative aspect-[4/5] overflow-hidden border border-border max-[600px]:aspect-square`}
+                >
+                  {cover && (
+                    <Image
+                      src={cover.url}
+                      alt={cover.alt ?? line.product.name}
+                      fill
+                      sizes="(max-width: 600px) 80px, 110px"
+                      className="object-cover"
+                    />
+                  )}
+                </div>
 
                 <div>
                   <div className="mb-2 font-mono text-[10px] tracking-[0.16em] uppercase text-muted">

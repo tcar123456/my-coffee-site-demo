@@ -76,7 +76,7 @@ export default async function SubscriptionsPage() {
               讓主理人替你選豆，省下挑豆的時間。
             </p>
             <div className="mt-8 flex justify-center">
-              <Button href="#" variant="primary">
+              <Button href="/subscribe" variant="primary">
                 了解訂閱配送 →
               </Button>
             </div>

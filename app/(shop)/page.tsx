@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 const featuredBeans = [
@@ -321,9 +322,10 @@ export default function HomePage() {
 
           <div className="flex flex-col gap-3">
             {plans.map((plan) => (
-              <div
+              <Link
                 key={plan.no}
-                className={`grid cursor-pointer grid-cols-[80px_1fr_auto] items-center gap-6 border p-[22px] transition-all duration-200 ${
+                href="/subscribe"
+                className={`group grid grid-cols-[80px_1fr_auto] items-center gap-6 border p-[22px] transition-all duration-200 ${
                   plan.active
                     ? "border-accent bg-surface-2"
                     : "border-border bg-surface hover:border-accent"
@@ -333,7 +335,9 @@ export default function HomePage() {
                   {plan.no}
                 </span>
                 <div>
-                  <div className="mb-1 text-[18px]">{plan.name}</div>
+                  <div className="mb-1 text-[18px] text-fg group-hover:text-accent">
+                    {plan.name}
+                  </div>
                   <div className="font-mono text-[12px] tracking-[0.04em] text-muted">
                     {plan.detail}
                   </div>
@@ -344,9 +348,9 @@ export default function HomePage() {
                     {plan.unit}
                   </small>
                 </div>
-              </div>
+              </Link>
             ))}
-            <Button href="#" variant="primary" block className="mt-2">
+            <Button href="/subscribe" variant="primary" block className="mt-2">
               了解訂閱方案 →
             </Button>
           </div>
