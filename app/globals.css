@@ -143,7 +143,8 @@ h1, h2, h3, h4 {
     radial-gradient(ellipse at 75% 75%, oklch(28% 0.06 40) 0%, transparent 60%),
     linear-gradient(160deg, oklch(24% 0.04 50), oklch(16% 0.02 50));
 }
-.hero-art::after {
+/* 偽咖啡豆 — 只在沒放真實 <img> 時當 placeholder；有圖時 :has() 把這層關掉 */
+.hero-art:not(:has(img))::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -162,7 +163,8 @@ h1, h2, h3, h4 {
     radial-gradient(ellipse at 70% 80%, oklch(24% 0.05 40) 0%, transparent 60%),
     linear-gradient(160deg, oklch(22% 0.04 50), oklch(16% 0.02 50));
 }
-.bean-cover::after {
+/* 偽咖啡豆 — 同上，僅在 fallback 模式（無真實 <img>）時渲染 */
+.bean-cover:not(:has(img))::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -212,7 +214,8 @@ h1, h2, h3, h4 {
   position: relative;
   overflow: hidden;
 }
-.img-block::before {
+/* 暖色 placeholder 漸層 — 同上，有真實 <img> 時關掉，避免 screen blend 洗白照片 */
+.img-block:not(:has(img))::before {
   content: '';
   position: absolute;
   inset: 0;
