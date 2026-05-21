@@ -133,47 +133,23 @@ h1, h2, h3, h4 {
 
 /* =============================================================
    Component-level visuals that are too custom for Tailwind utilities
-   (radial gradients, faux coffee beans, placeholder cover images)
+   (atmospheric gradient backgrounds for image-less fallback states)
    ============================================================= */
 
-/* Hero artwork — single-origin coffee bean still life */
+/* Hero artwork — moody dark gradient backdrop (fallback when 無 <img>) */
 .hero-art {
   background:
     radial-gradient(ellipse at 35% 30%, oklch(40% 0.08 60) 0%, transparent 55%),
     radial-gradient(ellipse at 75% 75%, oklch(28% 0.06 40) 0%, transparent 60%),
     linear-gradient(160deg, oklch(24% 0.04 50), oklch(16% 0.02 50));
 }
-/* 偽咖啡豆 — 只在沒放真實 <img> 時當 placeholder；有圖時 :has() 把這層關掉 */
-.hero-art:not(:has(img))::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 90px 130px at 38% 48%, oklch(10% 0.02 40) 0%, oklch(10% 0.02 40) 60%, transparent 62%),
-    radial-gradient(ellipse 75px 110px at 58% 44%, oklch(13% 0.02 40) 0%, oklch(13% 0.02 40) 60%, transparent 62%),
-    radial-gradient(ellipse 80px 120px at 50% 62%, oklch(8% 0.02 40) 0%, oklch(8% 0.02 40) 60%, transparent 62%);
-  opacity: 0.85;
-  pointer-events: none;
-}
 
-/* Featured bean cover — smaller faux beans */
+/* Product cover — moody dark gradient backdrop（同上） */
 .bean-cover {
   background:
     radial-gradient(ellipse at 30% 25%, oklch(38% 0.06 60) 0%, transparent 55%),
     radial-gradient(ellipse at 70% 80%, oklch(24% 0.05 40) 0%, transparent 60%),
     linear-gradient(160deg, oklch(22% 0.04 50), oklch(16% 0.02 50));
-}
-/* 偽咖啡豆 — 同上，僅在 fallback 模式（無真實 <img>）時渲染 */
-.bean-cover:not(:has(img))::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 22px 30px at 38% 52%, oklch(12% 0.02 40) 0%, oklch(12% 0.02 40) 60%, transparent 62%),
-    radial-gradient(ellipse 18px 25px at 58% 48%, oklch(14% 0.02 40) 0%, oklch(14% 0.02 40) 60%, transparent 62%),
-    radial-gradient(ellipse 20px 28px at 50% 64%, oklch(10% 0.02 40) 0%, oklch(10% 0.02 40) 60%, transparent 62%);
-  opacity: 0.85;
-  pointer-events: none;
 }
 
 /* Featured bean cover — alt color variants for products listing */
