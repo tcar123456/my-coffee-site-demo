@@ -170,8 +170,8 @@ export default function HomePage() {
 
           <div className="hero-art relative aspect-[4/5] overflow-hidden border border-border max-[860px]:aspect-[3/4] max-[860px]:max-h-[60vh]">
             <Image
-              src="https://images.unsplash.com/photo-1707303644088-e4dd2be82d2a?w=1400&q=80"
-              alt="暮焙烘焙坊內景 — 紅磚牆與烘豆機"
+              src="https://images.unsplash.com/photo-1496282808562-d01e97fac01c?w=1200&q=80"
+              alt="磨豆機正在研磨咖啡豆 — 暮焙烘焙坊"
               fill
               priority
               sizes="(max-width: 860px) 100vw, 50vw"
